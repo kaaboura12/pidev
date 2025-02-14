@@ -1,0 +1,139 @@
+{% extends 'base2.html.twig' %}
+
+{% block body %}
+<div class="card-body">
+    <h4 class="card-title">Basic Table</h4>
+    <p class="card-description"> Add class <code>.table</code> </p>
+    <div class="mb-3">
+        <h1>Liste Des Articles</h1>
+    </div>
+
+    <!-- 🔍 Barre de recherche -->
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un article..." onkeyup="filterArticles()">
+    </div>
+
+    <!-- ➕ Bouton d'ajout -->
+    <div class="mb-3">
+        <a href="/backAddarticle" class="btn btn-inverse-primary btn-fw">Ajouter Article</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table" id="articleTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Galerie</th>
+                    <th>Titre</th>
+                    <th>Prix (Dt)</th>
+                    <th>Date de Publication</th>
+                    <th>Disponibilité</th>
+                    <th>Nombre d'articles</th>
+                    <th>Likes</th>
+                    <th>Catégorie</th>
+                    <th>Contenu</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for article in liste %}
+                <tr>
+                    <td>{{ article.id }}</td>
+                    <td>{{ article.galerie.nom ? article.galerie.nom : 'Aucune' }}</td>
+                    <td>{{ article.titre }}</td>
+                    <td>{{ article.prix }}</td>
+                    <td>{{ article.datePub|date('Y-m-d') }}</td>
+                    <td>{{ article.disponible ? 'Oui' : 'Non' }}</td>
+                    <td>{{ article.nbrarticle }}</td>
+                    <td>{{ article.nbrlikes }}</td>
+                    <td>{{ article.categorie ?: 'Non défini' }}</td>
+                    <!-- Lien pour afficher l'image -->
+                    <td>
+                        {% if article.contenu %}
+                            <a href="#" class="image-link" data-toggle="modal" data-target="#imageModal" data-image="{{ asset('uploads/images/' ~ article.contenu) }}">
+                                <img src="{{ asset('uploads/images/' ~ article.contenu) }}" alt="Image de l'article" class="img-thumbnail" style="width: 50px;">
+                            </a>
+                        {% else %}
+                            Pas d'image
+                        {% endif %}
+                    </td>
+                    <!-- description -->
+                    <td>
+                        {% set description = article.description %}
+                        {% if description|length > 50 %}
+                            <span class="short-desc">{{ description|slice(0, 50) }}...</span>
+                            <span class="full-desc d-none">{{ description }}</span>
+                            <a href="#" class="read-more btn btn-link" onclick="toggleDescription(this); return false;">Lire plus</a>
+                        {% else %}
+                            {{ description }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">Action</button>
+                            <div class="dropdown-menu">
+                                <a class="btn btn-inverse-danger btn-fw" href="{{ path('delete_article', { 'id': article.id }) }}">Supprimer</a>
+                                <a class="btn btn-inverse-primary btn-fw" href="{{ path('edit_article', { 'id': article.id }) }}">Modifier</a>
+                            </div>
+                        </div>
+                    </td>
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal pour afficher l'image en grand -->
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Image de l'article</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Image qui sera affichée -->
+                <img src="" id="modalImage" alt="Image de l'article" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Capture du clic sur le lien d'image pour mettre à jour l'image dans le modal
+    document.querySelectorAll('.image-link').forEach(function(link) {
+        link.addEventListener('click', function(event) {
+            event.preventDefault(); // Empêcher le comportement par défaut
+            var imageUrl = link.getAttribute('data-image'); // Récupérer l'URL de l'image
+            document.getElementById('modalImage').src = imageUrl; // Mettre l'URL de l'image dans le modal
+        });
+    });
+
+    // Fonction pour filtrer les articles dans le tableau
+    function filterArticles() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let table = document.getElementById("articleTable");
+        let rows = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < rows.length; i++) { // Ignorer l'en-tête
+            let cells = rows[i].getElementsByTagName("td");
+            let match = false;
+
+            for (let j = 0; j < cells.length - 1; j++) { // Ne pas inclure "Actions"
+                if (cells[j] && cells[j].innerText.toLowerCase().includes(input)) {
+                    match = true;
+                    break;
+                }
+            }
+
+            rows[i].style.display = match ? "" : "none";
+        }
+    }
+</script>
+
+{% endblock %}

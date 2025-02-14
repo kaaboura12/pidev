@@ -1,0 +1,99 @@
+{% extends 'base2.html.twig' %}
+{% block body %}
+
+<div class="card-body">
+    <h4 class="card-title">Basic Table</h4>
+    <p class="card-description"> Add class <code>.table</code> </p>
+    <div class="mb-3">
+        <h1>Liste Des Galeries</h1>
+    </div>
+
+    <!-- Barre de recherche -->
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Rechercher une galerie..." onkeyup="filterGalleries()">
+    </div>
+    <!-- Boutton d'ajout -->
+    <div class="mb-3">
+        <a href="/backAddgallerie" class="btn btn-inverse-primary btn-fw">Ajouter Galerie</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table" id="galleryTable">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>User_id</th>
+                    <th>Nom</th>
+                    <th>Date de Création</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for galerie in liste %}
+                <tr>
+                    <td>{{ galerie.id }}</td>
+                    <td>{{ galerie.user.id }}</td>
+                    <td>{{ galerie.nom }}</td>
+                    <td>{{ galerie.datecreation|date('Y-m-d') }}</td>
+                    <td>
+                        {% set description = galerie.description %}
+                        {% if description|length > 50 %}
+                            <span class="short-desc">{{ description|slice(0, 50) }}...</span>
+                            <span class="full-desc d-none">{{ description }}</span>
+                            <a href="#" class="read-more btn btn-link" onclick="toggleDescription(this); return false;">Lire plus</a>
+                        {% else %}
+                            {{ description }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">Action</button>
+                            <div class="dropdown-menu">
+                                <a class="btn btn-inverse-danger btn-fw" href="{{ path('delete_galerie', { 'id': galerie.id }) }}">Supprimer</a>
+                                <a class="btn btn-inverse-primary btn-fw" href="{{ path('edit_galerie', { 'id': galerie.id }) }}">Modifier</a>
+                                <a class="btn btn-inverse-secondary btn-fw" href="{{ path('back_showarticlebygallerie', { 'id': galerie.id }) }}">Voir Articles</a>
+                                
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 📜 Script JavaScript pour la recherche -->
+<script>
+    function filterGalleries() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let table = document.getElementById("galleryTable");
+        let rows = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < rows.length; i++) {  // Commence à 1 pour ignorer l'en-tête
+            let rowText = rows[i].textContent.toLowerCase();
+            if (rowText.includes(input)) {
+                rows[i].style.display = "";
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+    }
+    function toggleDescription(element) {
+    let shortDesc = element.previousElementSibling.previousElementSibling; // Élément court
+    let fullDesc = element.previousElementSibling; // Élément complet
+
+    if (fullDesc.classList.contains("d-none")) {
+        fullDesc.classList.remove("d-none");
+        shortDesc.classList.add("d-none");
+        element.textContent = "Lire moins";
+    } else {
+        fullDesc.classList.add("d-none");
+        shortDesc.classList.remove("d-none");
+        element.textContent = "Lire plus";
+    }
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,336 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<!--********************************
+   		Code Start From Here 
+	******************************** -->
+
+
+    <!-- Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    <!-- Cursor End -->
+
+    <!--==============================
+     Preloader
+    ==============================-->
+    <div class="preloader ">
+        <div class="preloader-inner">
+            <img src="assets/img/logo-white.svg" alt="Artvista">
+            <span class="loader"></span>
+        </div>
+    </div>
+
+    <!--==============================
+    Product Lightbox
+    ==============================-->
+    <div id="QuickView" class="white-popup mfp-hide">
+        <div class="container bg-white">
+            <div class="row gx-50">
+                <div class="col-lg-6">
+                    <div class="product-big-img">
+                        <div class="img"><img src="assets/img/product/product-details1.png" alt="Product Image"></div>
+                    </div>
+                </div>
+                <div class="col-lg-6 align-self-center">
+                    <div class="product-about">
+                        <p class="price">{{ formation.prix ?? '0.00' }} TND</p>
+                        <h2 class="product-title">{{ formation.titre ?? 'Formation Title' }}</h2>
+                        <p class="text">{{ formation.description ?? 'No description available' }}</p>
+                        <div class="checklist">
+                            <ul>
+                                <li><i class="far fa-check-circle"></i> Date début: 
+                                    {% if formation is defined and formation.dateDebut %}
+                                        {{ formation.dateDebut|date('d/m/Y') }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </li>
+                                <li><i class="far fa-check-circle"></i> Date fin: 
+                                    {% if formation is defined and formation.dateFin %}
+                                        {{ formation.dateFin|date('d/m/Y') }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </li>
+                                <li><i class="far fa-check-circle"></i> Places disponibles: {{ formation.nbrpart ?? '0' }}</li>
+                            </ul>
+                        </div>
+                        <div class="actions">
+                            <button class="btn">S'INSCRIRE <i class="fas fa-user-plus ms-2"></i></button>
+                        </div>
+                        <div class="product_meta">
+                            <span class="posted_in">Catégorie: <a href="#" rel="tag">{{ formation.categorie.nom ?? 'Non catégorisé' }}</a></span>
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button title="Close (Esc)" type="button" class="mfp-close">×</button>
+        </div>
+    </div>
+
+    <div class="sidemenu-wrapper">
+        <div class="sidemenu-content">
+            <button class="closeButton sideMenuCls"><i class="fas fa-times"></i></button>
+            <div class="widget footer-widget">
+                <div class="widget widget-about footer-widget">
+                    <div class="footer-logo">
+                        <a href="index.html"><img src="assets/img/logo-white.svg" alt="logo"></a>
+                    </div>
+                    <p class="about-text mb-4 text-white">A small business can be better than a big business because of agility and adaptability due to their size and scale.</p>
+                    
+                    <p class="footer-text text-white">
+                        <a href="tel:851555961658"><i class="fas fa-phone-alt me-2"></i>+85 155 596 1658</a>
+                    </p>
+                    <p class="contact-text text-white"><i class="fa fa-map-marker-alt me-2"></i> Losangle, Street Road 24, NewYork, USA - 67452</p>
+                    <p class="footer-text text-white"><a href="mailto:support@gmail.com"><i class="fas fa-envelope me-2"></i>support@gmail.com</a></p>
+                    <div class="social-btn style2 mt-30">
+                        <a href="https://facebook.com/"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.twitter.com/"><i class="fab fa-twitter"></i></a>
+                        <a href="https://linkedin.com/"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="https://instagram.com/"><i class="fab fa-instagram"></i></a>                           
+                    </div>
+                    <div class="recent-post-wrap mt-40">
+                        <div class="recent-post">
+                            <div class="media-img">
+                                <a href="blog-details.html"><img src="assets/img/widget/widget1-1.png" alt="Blog Image"></a>
+                            </div>
+                            <div class="media-body">
+                                <div class="recent-post-meta">
+                                    <a href="blog.html"><i class="far fa-clock"></i> 15 Jan, 2024</a>
+                                </div>
+                                <h4 class="post-title"><a class="text-inherit" href="blog-details.html">Education is at the heart of everything we do, and</a></h4>                                
+                            </div>
+                        </div>
+                        <div class="recent-post">
+                            <div class="media-img">
+                                <a href="blog-details.html"><img src="assets/img/widget/widget1-2.png" alt="Blog Image"></a>
+                            </div>
+                            <div class="media-body">
+                                <div class="recent-post-meta">
+                                    <a href="blog.html"><i class="far fa-clock"></i> 05 Jul, 2024</a>
+                                </div>
+                                <h4 class="post-title"><a class="text-inherit" href="blog-details.html">Exploring A Journey Through Egyptian Artifacts</a></h4>                                
+                            </div>
+                        </div>
+                        <div class="recent-post">
+                            <div class="media-img">
+                                <a href="blog-details.html"><img src="assets/img/widget/widget1-3.png" alt="Blog Image"></a>
+                            </div>
+                            <div class="media-body">
+                                <div class="recent-post-meta">
+                                    <a href="blog.html"><i class="far fa-clock"></i> 14 Sep, 2024</a>
+                                </div>
+                                <h4 class="post-title"><a class="text-inherit" href="blog-details.html">Whether you're a seasoned or a curious </a></h4>                                
+                            </div>
+                        </div>
+                    </div>
+                    <form class="newsletter-form mt-40">
+                        <div class="form-group">
+                            <input class="form-control" type="email" placeholder="Email Address" required="">
+                        </div>
+                        <button type="submit" class="btn">SUBSCRIBE</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--==============================
+    PopUp Search
+    ============================== -->
+    <div class="popup-search-box">
+        <button class="searchClose"><i class="fas fa-times"></i></button>
+        <form action="#">
+            <input type="text" placeholder="Search Here..">
+            <button type="submit"><i class="fas fa-search"></i></button>
+        </form>
+    </div>
+    <!--==============================
+    Mobile Menu
+    ============================== -->
+    <div class="mobile-menu-wrapper">
+        <div class="mobile-menu-area text-center">
+            <button class="menu-toggle"><i class="fas fa-times"></i></button>
+            <div class="mobile-logo">
+                <a href="index.html"><img src="assets/img/logo-white.svg" alt="Artvista"></a>
+            </div>
+            <div class="mobile-menu">
+                <ul>
+                    <li class="menu-item-has-children">
+                        <a href="#">Home</a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a href="index.html">Home 01</a>
+                            </li>
+                            <li>
+                                <a href="home-2.html">Home 02</a>
+                            </li>
+                            <li>
+                                <a href="home-3.html">Home 03</a>
+                            </li>
+                            <li>
+                                <a href="home-4.html">Home 04</a>
+                            </li>
+                            <li>
+                                <a href="home-5.html">Home 05</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-item-has-children">
+                        <a href="#">Pages</a>
+                        <ul class="sub-menu">
+                            <li><a href="about.html">About Page</a></li>
+                            <li><a href="team.html">Team Page</a></li>
+                            <li><a href="team-details.html">Team Details</a></li>
+                            <li><a href="opening-hour.html">Opening Hour</a></li>
+                            <li><a href="location.html">Location Us</a></li>
+                            <li><a href="error.html">Error Page</a></li>
+                        </ul>
+                    </li>
+                    <li class="menu-item-has-children">
+                        <a href="#">Portfolio</a>
+                        <ul class="sub-menu">
+                            <li><a href="project.html">Portfolio Standard</a></li>
+                            <li><a href="project-2.html">Portfolio On Hover</a></li>
+                            <li><a href="project-3.html">Portfolio List</a></li>
+                            <li><a href="project-4.html">Portfolio Full Width</a></li>
+                            <li><a href="project-details.html">Portfolio Details</a></li>
+                        </ul>
+                    </li>
+                    <li class="menu-item-has-children">
+                        <a href="#">Events</a>
+                        <ul class="sub-menu">
+                            <li><a href="event.html">Event Page</a></li>
+                            <li><a href="event-2.html">Event Simple Page</a></li>
+                            <li><a href="event-3.html">Event Slider Page</a></li>
+                            <li><a href="event-4.html">Event list Page</a></li>
+                            <li><a href="event-details.html">Event Details</a></li>
+                        </ul>
+                    </li>
+                    <li class="menu-item-has-children">
+                        <a href="#">Blog</a>
+                        <ul class="sub-menu">
+                            <li><a href="blog.html">Blog Page</a></li>
+                            <li><a href="blog-details.html">Blog Details</a></li>
+                        </ul>
+                    </li>
+                    <li class="menu-item-has-children">
+                        <a href="#">Shop</a>
+                        <ul class="sub-menu">
+                            <li><a href="shop.html">Shop Grid</a></li>
+                            <li><a href="shop-2.html">Shop Grid with sidebar</a></li>
+                            <li><a href="shop-details.html">Shop Details</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="contact.html">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="smooth-wrapper">
+        <div id="smooth-content">
+        <!--==============================
+        Breadcumb
+        ============================== -->
+        <div class="breadcumb-wrapper text-center" data-bg-src="assets/img/bg/breadcrumb-bg.png">
+            <div class="container">
+                <div class="breadcumb-content">
+                    <h1 class="breadcumb-title">Nos Formations</h1>
+                </div>
+                <ul class="breadcumb-menu">
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li class="active">Formations</li>
+                </ul>                
+            </div>
+        </div>
+
+        <!--==============================
+        Formation List
+        ============================== -->
+        <section class="space-top space-extra-bottom">
+            <div class="container">
+                <div class="row gy-4">
+                    {% for formation in formations %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="vs-blog blog-style1">
+                                <div class="blog-content">
+                                    <div class="blog-meta">
+                                        <a href="#"><i class="far fa-calendar-alt"></i>{{ formation.dateDebut|date('d/m/Y') }}</a>
+                                        <a href="#"><i class="fas fa-tag"></i>{{ formation.categorie.nom }}</a>
+                                    </div>
+                                    <h3 class="blog-title h5 font-body">{{ formation.titre }}</h3>
+                                    <p class="blog-text">{{ formation.description|slice(0, 100) }}...</p>
+                                    <div class="blog-bottom">
+                                        <div class="price-tag">{{ formation.prix }} TND</div>
+                                        <div class="participants">
+                                            <i class="fas fa-users"></i> {{ formation.nbrpart }} places
+                                        </div>
+                                    </div>
+                                    <a href="#QuickView-{{ formation.id }}" class="link-btn popup-content">En savoir plus<i class="far fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--==============================
+                        Quick View Modal for each formation
+                        ============================== -->
+                        <div id="QuickView-{{ formation.id }}" class="white-popup mfp-hide">
+                            <div class="container bg-white">
+                                <div class="row gx-50">
+                                    <div class="col-lg-6">
+                                        <div class="product-big-img">
+                                            <div class="img"><img src="assets/img/product/product-details1.png" alt="Formation Image"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 align-self-center">
+                                        <div class="product-about">
+                                            <p class="price">{{ formation.prix }} TND</p>
+                                            <h2 class="product-title">{{ formation.titre }}</h2>
+                                            <p class="text">{{ formation.description }}</p>
+                                            <div class="checklist">
+                                                <ul>
+                                                    <li><i class="far fa-check-circle"></i> Date début: {{ formation.dateDebut|date('d/m/Y') }}</li>
+                                                    <li><i class="far fa-check-circle"></i> Date fin: {{ formation.dateFin|date('d/m/Y') }}</li>
+                                                    <li><i class="far fa-check-circle"></i> Places disponibles: {{ formation.nbrpart }}</li>
+                                                </ul>
+                                            </div>
+                                            <div class="actions">
+                                                <button class="btn">S'INSCRIRE <i class="fas fa-user-plus ms-2"></i></button>
+                                            </div>
+                                            <div class="product_meta">
+                                                <span class="posted_in">Catégorie: <a href="#" rel="tag">{{ formation.categorie.nom }}</a></span>
+                                                {% if formation.video %}
+                                                    <span class="video_link">Vidéo: <a href="{{ formation.video }}" target="_blank">Voir la présentation</a></span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button title="Close (Esc)" type="button" class="mfp-close">×</button>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="col-12 text-center">
+                            <div class="error-content">
+                                <h3>Aucune formation disponible</h3>
+                                <p>Revenez bientôt pour découvrir nos nouvelles formations.</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+         <!-- Scroll To Top -->
+    <div class="scroll-top">
+        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" style="transition: stroke-dashoffset 10ms linear 0s; stroke-dasharray: 307.919, 307.919; stroke-dashoffset: 307.919;"></path>
+        </svg>
+    </div>
+
+{% endblock %}
