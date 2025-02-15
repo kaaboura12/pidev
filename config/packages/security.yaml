@@ -1,0 +1,29 @@
+security:
+    # Disable password hashers (if not needed)
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    # Disable user providers (if not needed)
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
+    firewalls:
+        # Disable security for development routes (profiler, assets, etc.)
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        # Main firewall configuration
+        main:
+            lazy: true
+            provider: app_user_provider
+            stateless: true  # Allow stateless access (no session)
+            security: false  # Disable security for this firewall
+
+    # Access control (optional, if you want to restrict certain routes)
+    access_control:
+        # Allow access to all routes by default
+        - { path: ^/, roles: PUBLIC_ACCESS }

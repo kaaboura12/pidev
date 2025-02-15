@@ -1,0 +1,63 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Gestion des Offres d'Emploi{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Jobs <span class="text-muted">{{ emplois|length }} results</span></h1>
+    
+
+    <div class="mb-4">
+        <a href="{{ path('backoffice_emploi_add') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Ajouter une offre
+        </a>
+    </div>
+
+    <div class="list-group">
+        {% for emploi in emplois %}
+            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border-0 shadow-sm">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="mb-1">{{ emploi.titre }}</h5>
+                        <p class="mb-1 text-muted">{{ emploi.description|slice(0, 100) ~ '...' }}</p>
+                        <small class="text-muted">
+                            <strong>Lieu :</strong> {{ emploi.lieu }}<br>
+                            <strong>Budget :</strong> {{ emploi.budget }} DT<br>
+                            <strong>Statut :</strong> 
+                            <span class="badge badge-{{ emploi.statut == 'Ouvert' ? 'success' : 'secondary' }}">
+                                {{ emploi.statut }}
+                            </span>
+                        </small>
+                    </div>
+                    <div class="text-right">
+                        <small class="text-muted">Posted {{ emploi.datePublication|date('d F Y') }}</small><br>
+                        <div class="btn-group mt-2">
+
+                            <a href="{{ path('backoffice_emploi_show', {'id': emploi.id}) }}" class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i> Voir
+                            </a>
+
+                            
+                            <a href="{{ path('backoffice_emploi_edit', {'id': emploi.id}) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-edit"></i> Éditer
+                            </a>
+
+
+
+                            <form method="POST" action="{{ path('backoffice_emploi_delete', {'id': emploi.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ?');">
+                             <button type="submit" class="btn btn-danger btn-sm">
+                               <i class="fas fa-trash-alt"></i> Supprimer
+                             </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="list-group-item">
+                <p class="text-center text-muted">Aucune offre d'emploi disponible.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

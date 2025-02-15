@@ -1,0 +1,35 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Candidature Offre{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Candidature Offre</h1>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Candidat: {{ candidatureOffre.candidature.candidat }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Emploi: {{ candidatureOffre.emploi.titre }}</h6>
+                <p class="card-text">Statut: {{ candidatureOffre.statut }}</p>
+                <p class="card-text">Date: {{ candidatureOffre.dateAssociation|date('Y-m-d H:i:s') }}</p>
+
+                <form method="post" action="{{ path('backoffice_candidature_offre_update_status', {'id': candidatureOffre.id}) }}">
+                    <div class="form-group">
+                        <label for="status">Statut</label>
+                        <select name="status" id="status" class="form-control">
+                            <option value="En attente" {{ candidatureOffre.statut == 'En attente' ? 'selected' : '' }}>En attente</option>
+                            <option value="Sélectionnée" {{ candidatureOffre.statut == 'Sélectionnée' ? 'selected' : '' }}>Sélectionnée</option>
+                            <option value="Rejetée" {{ candidatureOffre.statut == 'Rejetée' ? 'selected' : '' }}>Rejetée</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                </form>
+
+                <!-- Bouton de retour à la liste -->
+                <a href="{{ path('backoffice_candidature_offre_list') }}" class="btn btn-secondary mt-3">
+                    <i class="fas fa-arrow-left me-1"></i> Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
