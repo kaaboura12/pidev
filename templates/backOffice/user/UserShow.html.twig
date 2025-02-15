@@ -1,0 +1,50 @@
+{% extends 'base2.html.twig' %}
+
+{% block body %}
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Gestion des Utilisateurs</h4>
+
+        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+            <div class="form-group">
+                {{ form_label(form.nom) }}
+                {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.prenom) }}
+                {{ form_widget(form.prenom, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.email) }}
+                {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.numtlf, 'Numéro de Téléphone') }}
+                {{ form_widget(form.numtlf, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.roles, 'Rôle') }}
+                {{ form_widget(form.roles, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.photoFile, 'Photo de Profil') }}
+                {{ form_widget(form.photoFile, {'attr': {'class': 'form-control', 'type': 'file'}}) }}
+
+                {% if user.photoDeProfile %}
+                    <div class="mt-2">
+                        <p>Image actuelle :</p>
+                        <img src="{{ asset('uploads/' ~ user.photoDeProfile) }}" width="100" alt="Photo de profil">
+                    </div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

@@ -3,3 +3,12 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+    
+front_office_home:
+    path: /home
+    controller: App\Controller\DashboardController::frontOffice
+
+back_office_home:
+    path: /back
+    controller: App\Controller\DashboardController::backOffice
+
