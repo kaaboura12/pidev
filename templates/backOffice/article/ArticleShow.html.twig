@@ -1,0 +1,538 @@
+{% extends 'base2.html.twig' %}
+
+{% block body %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <br></br><br></br>
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>Liste Des Articles</h1>
+        </div>
+    </div>
+
+    <!-- Barre d'outils (recherche et boutons) -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="search-box">
+                <i class="mdi mdi-magnify search-icon"></i>
+                <input type="text" id="searchInput3" class="form-control" placeholder="Rechercher un article...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="row">
+    <div class="col-md-6 text-end">
+            <a href="/backAddarticle" class="btn btn-inverse-primary btn-fw me-2">
+                <i class="mdi mdi-plus-circle me-2"></i>Ajouter Article
+            </a>
+            <button id="exportPdfBtn" class="btn btn-inverse-success btn-fw">
+                <i class="mdi mdi-file-pdf me-2"></i>Export PDF
+            </button>
+        </div>
+        <!-- Tableau des articles (pleine largeur) -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="articleTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Galerie</th>
+                                    <th>Titre</th>
+                                    <th>Prix (Dt)</th>
+                                    <th>Date de Publication</th>
+                                    <th>Disponibilité</th>
+                                    <th>Nombre d'articles</th>
+                                    <th>Likes</th>
+                                    <th>Catégorie</th>
+                                    <th>Contenu</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for article in liste %}
+                                <tr>
+                                    <td>{{ article.id }}</td>
+                                    <td>{{ article.galerie.nom ? article.galerie.nom : 'Aucune' }}</td>
+                                    <td>{{ article.titre }}</td>
+                                    <td>{{ article.prix }}</td>
+                                    <td>{{ article.datePub|date('Y-m-d') }}</td>
+                                    <td>{{ article.disponible ? 'Oui' : 'Non' }}</td>
+                                    <td>{{ article.nbrarticle }}</td>
+                                    <td>{{ article.nbrlikes }}</td>
+                                    <td>{{ article.categorie ?: 'Non défini' }}</td>
+                                    <!-- Lien pour afficher l'image -->
+                                    <td>
+                                        {% if article.contenu %}
+                                            <a href="#" class="image-link" data-toggle="modal" data-target="#imageModal" data-image="{{ asset('uploads/images/' ~ article.contenu) }}">
+                                                <img src="{{ asset('uploads/images/' ~ article.contenu) }}" alt="Image de l'article" class="img-thumbnail" style="width: 50px;">
+                                            </a>
+                                        {% else %}
+                                            Pas d'image
+                                        {% endif %}
+                                    </td>
+                                    <!-- description -->
+                                    <td>
+                                        <a href="#" class="btn btn-link" data-toggle="modal" data-target="#descModal" 
+                                        onclick="showDescription('{{ article.id }}', `{{ article.description|e('js') }}`)">
+                                            Voir
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">Action</button>
+                                            <div class="dropdown-menu">
+                                                <a class="btn btn-inverse-danger btn-fw" href="{{ path('delete_article', { 'id': article.id }) }}">Supprimer</a>
+                                                <a class="btn btn-inverse-primary btn-fw" href="{{ path('edit_article', { 'id': article.id }) }}">Modifier</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <button id="prevPage" class="btn btn-outline-secondary">Précédent</button>
+                        <span id="pagination-info" class="fw-bold"></span>
+                        <button id="nextPage" class="btn btn-outline-secondary">Suivant</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphique en dessous du tableau -->
+    <div class="row mt-4">
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title text-center">Répartition par Catégorie</h4>
+                    <div style="height: 400px;">
+                        <canvas id="categoriesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<!-- Modal pour afficher l'image en grand -->
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Image de l'article</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Image qui sera affichée -->
+                <img src="" id="modalImage" alt="Image de l'article" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal pour afficher la description -->
+<div class="modal fade" id="descModal" tabindex="-1" role="dialog" aria-labelledby="descModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="descModalLabel">Description de l'Article</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="modalDescription"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+<!-- Styles -->
+<style>
+    .page-title {
+        color: #333;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+
+    #searchInput3 {
+        padding-left: 35px;
+    }
+
+    .card {
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        border: none;
+    }
+
+    .table th {
+        background-color: #f8f9fa;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .btn-group .dropdown-menu {
+        min-width: 150px;
+    }
+
+    .filtered-out {
+        display: none !important;
+    }
+</style>
+
+<!-- Scripts -->
+<script>
+let currentPage = 1;
+const rowsPerPage = 5;
+
+// Fonction de recherche
+document.getElementById('searchInput3').addEventListener('keyup', function() {
+    let searchText = this.value.toLowerCase();
+    let tableRows = document.querySelectorAll('#articleTable tbody tr');
+    let hasResults = false;
+    let visibleRows = [];
+
+    // Réinitialiser l'affichage de toutes les lignes d'abord
+    tableRows.forEach(row => {
+        // Récupérer toutes les cellules sauf la dernière (Actions)
+        let cells = Array.from(row.getElementsByTagName('td')).slice(0, -1);
+        let rowText = cells.map(cell => cell.textContent.toLowerCase()).join(' ');
+        
+        if(rowText.includes(searchText)) {
+            row.classList.remove('filtered-out');
+            hasResults = true;
+            visibleRows.push(row);
+        } else {
+            row.classList.add('filtered-out');
+        }
+    });
+
+    // Gérer l'affichage du message "Aucun résultat"
+    let noResultsMsg = document.getElementById('noResultsMessage');
+    if (!noResultsMsg) {
+        noResultsMsg = document.createElement('div');
+        noResultsMsg.id = 'noResultsMessage';
+        noResultsMsg.className = 'alert alert-info mt-3 text-center';
+        noResultsMsg.textContent = 'Aucun article trouvé';
+        document.querySelector('.table-responsive').insertAdjacentElement('afterend', noResultsMsg);
+    }
+    
+    noResultsMsg.style.display = hasResults ? 'none' : 'block';
+
+    // Réinitialiser la pagination et l'appliquer aux résultats filtrés
+    currentPage = 1;
+    updatePagination();
+});
+
+function updatePagination() {
+    const table = document.getElementById("articleTable");
+    const tbody = table.getElementsByTagName("tbody")[0];
+    const rows = Array.from(tbody.getElementsByTagName("tr"));
+    const visibleRows = rows.filter(row => !row.classList.contains('filtered-out'));
+    const totalPages = Math.ceil(visibleRows.length / rowsPerPage);
+
+    // Masquer toutes les lignes d'abord
+    visibleRows.forEach(row => row.style.display = "none");
+
+    // Afficher les lignes de la page actuelle
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = Math.min(start + rowsPerPage, visibleRows.length);
+    for (let i = start; i < end; i++) {
+        visibleRows[i].style.display = "";
+    }
+
+    // Mettre à jour l'information de pagination
+    document.getElementById("pagination-info").textContent = `Page ${currentPage} / ${totalPages || 1}`;
+    document.getElementById("prevPage").disabled = currentPage === 1;
+    document.getElementById("nextPage").disabled = currentPage === totalPages || totalPages === 0;
+}
+
+// Gestionnaires d'événements pour la pagination
+document.getElementById("prevPage").addEventListener("click", function() {
+    if (currentPage > 1) {
+        currentPage--;
+        updatePagination();
+    }
+});
+
+document.getElementById("nextPage").addEventListener("click", function() {
+    const visibleRows = Array.from(document.querySelectorAll('#articleTable tbody tr'))
+        .filter(row => !row.classList.contains('filtered-out'));
+    const totalPages = Math.ceil(visibleRows.length / rowsPerPage);
+    
+    if (currentPage < totalPages) {
+        currentPage++;
+        updatePagination();
+    }
+});
+
+// Style pour la recherche et la pagination
+document.head.insertAdjacentHTML('beforeend', `
+    <style>
+        #searchInput3 {
+            padding: 8px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+        }
+        #searchInput3:focus {
+            outline: none;
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        #noResultsMessage {
+            display: none;
+            margin-top: 15px;
+        }
+        .filtered-out {
+            display: none !important;
+        }
+    </style>
+`);
+
+// Initialiser la pagination au chargement
+document.addEventListener("DOMContentLoaded", updatePagination);
+</script>
+
+
+<!-- 📜 Script JavaScript pour exporter le tableau en PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+function exportToPDF() {
+    const table = document.getElementById("articleTable");
+    const today = new Date();
+
+    // Créer un conteneur pour le PDF avec en-tête
+    const pdfContainer = document.createElement('div');
+    pdfContainer.innerHTML = `
+        <div style="padding: 20px; font-family: Arial, sans-serif;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="color: #333; margin-bottom: 10px;">Liste des Articles</h1>
+                <p style="color: #666;">Généré le ${today.toLocaleDateString('fr-FR')}</p>
+                <hr style="border: 1px solid #eee; margin: 20px 0;">
+            </div>
+            ${table.outerHTML}
+            <div style="margin-top: 20px; text-align: right; font-size: 12px; color: #666;">
+                <p>Document généré automatiquement</p>
+            </div>
+        </div>
+    `;
+
+    // Appliquer des styles au tableau
+    const tableElement = pdfContainer.querySelector('table');
+    tableElement.style.width = '100%';
+    tableElement.style.borderCollapse = 'collapse';
+    tableElement.style.marginBottom = '20px';
+
+    // Masquer les colonnes spécifiques
+    let columnsToHide = [9, 10, 11]; // Index des colonnes à masquer
+    let rows = tableElement.getElementsByTagName("tr");
+
+    // Appliquer des styles aux cellules
+    Array.from(rows).forEach((row, index) => {
+        let cells = row.getElementsByTagName(index === 0 ? "th" : "td");
+        Array.from(cells).forEach((cell, cellIndex) => {
+            if (columnsToHide.includes(cellIndex)) {
+                cell.style.display = 'none';
+            } else {
+                cell.style.padding = '8px 12px';
+                cell.style.border = '1px solid #ddd';
+                if (index === 0) { // En-têtes
+                    cell.style.backgroundColor = '#f8f9fa';
+                    cell.style.color = '#333';
+                    cell.style.fontWeight = 'bold';
+                }
+            }
+        });
+    });
+
+    // Configuration des options du PDF
+    const opt = {
+        margin: [0.5, 0.5],
+        filename: `articles-${today.toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            logging: false
+        },
+        jsPDF: { 
+            unit: 'in', 
+            format: 'a4', 
+            orientation: 'landscape',
+            compress: true
+        }
+    };
+
+    // Désactiver le bouton et afficher l'animation de chargement
+    const button = document.getElementById('exportPdfBtn');
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="mdi mdi-loading mdi-spin me-1"></i> Génération en cours...';
+    button.disabled = true;
+
+    // Générer le PDF
+    html2pdf().set(opt).from(pdfContainer).save().then(() => {
+        // Réafficher les colonnes après la génération du PDF
+        columnsToHide.forEach((index) => {
+            let cells = Array.from(rows).map(row => row.getElementsByTagName('td')[index]);
+            cells.forEach(cell => cell.style.display = 'table-cell');
+        });
+
+        button.innerHTML = originalText;
+        button.disabled = false;
+    }).catch(error => {
+        console.error('Erreur lors de la génération du PDF:', error);
+
+        // Réafficher les colonnes en cas d'erreur
+        columnsToHide.forEach((index) => {
+            let cells = Array.from(rows).map(row => row.getElementsByTagName('td')[index]);
+            cells.forEach(cell => cell.style.display = 'none');
+        });
+
+        button.innerHTML = originalText;
+        button.disabled = false;
+        alert('Une erreur est survenue lors de la création du PDF.');
+    });
+}
+
+// Attacher l'événement au bouton
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('exportPdfBtn').addEventListener('click', exportToPDF);
+});
+</script>
+
+
+<script>
+    // Capture du clic sur le lien d'image pour mettre à jour l'image dans le modal
+    document.querySelectorAll('.image-link').forEach(function(link) {
+        link.addEventListener('click', function(event) {
+            event.preventDefault(); // Empêcher le comportement par défaut
+            var imageUrl = link.getAttribute('data-image'); // Récupérer l'URL de l'image
+            document.getElementById('modalImage').src = imageUrl; // Mettre l'URL de l'image dans le modal
+        });
+    });
+
+    // Fonction pour filtrer les articles dans le tableau
+    function filterArticles() {
+        let input = document.getElementById("searchInput3").value.toLowerCase();
+        let table = document.getElementById("articleTable");
+        let rows = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < rows.length; i++) { // Ignorer l'en-tête
+            let cells = rows[i].getElementsByTagName("td");
+            let match = false;
+
+            for (let j = 0; j < cells.length - 1; j++) { // Ne pas inclure "Actions"
+                if (cells[j] && cells[j].innerText.toLowerCase().includes(input)) {
+                    match = true;
+                    break;
+                }
+            }
+
+            rows[i].style.display = match ? "" : "none";
+        }
+    }
+     function showDescription(id, description) {
+        document.getElementById("modalDescription").innerText = description;
+        $('#descModal').modal('show'); // Afficher le modal
+    }
+    
+
+</script>
+
+<!-- Script pour le graphique -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Collecter les données des catégories depuis le tableau
+    let categories = {};
+    document.querySelectorAll('#articleTable tbody tr').forEach(row => {
+        const categorie = row.cells[8].textContent.trim(); // Index 8 pour la colonne catégorie
+        categories[categorie] = (categories[categorie] || 0) + 1;
+    });
+
+    // Préparer les données pour le graphique
+    const data = {
+        labels: Object.keys(categories),
+        datasets: [{
+            data: Object.values(categories),
+            backgroundColor: [
+                '#FF6384',
+                '#36A2EB',
+                '#FFCE56',
+                '#4BC0C0',
+                '#9966FF',
+                '#FF9F40'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    // Configuration du graphique
+    const config = {
+        type: 'doughnut',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 10,
+                        font: {
+                            size: 11
+                        }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Distribution des Articles par Catégorie',
+                    font: {
+                        size: 14
+                    },
+                    padding: {
+                        top: 5,
+                        bottom: 10
+                    }
+                }
+            }
+        }
+    };
+
+    // Créer le graphique
+    const ctx = document.getElementById('categoriesChart').getContext('2d');
+    new Chart(ctx, config);
+});
+</script>
+{% endblock %}
