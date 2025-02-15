@@ -11,6 +11,8 @@ use App\Form\EventaddmodifyType;
 use Symfony\Component\HttpFoundation\Request;
 use App\Form\EventeditType;
 use App\Entity\Donation;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Service\GeminiChatbot;
 
 final class EventController extends AbstractController
 {
@@ -66,6 +68,7 @@ final class EventController extends AbstractController
 
         return $this->render('frontOffice/event/event-4.html.twig', [
             'events' => $events,
+            'here_maps_api_key' => $this->getParameter('here_maps_api_key'),
         ]);
     }
 
@@ -192,7 +195,7 @@ final class EventController extends AbstractController
             ->getQuery()
             ->getSingleScalarResult() ?? 0;
 
-        // Calculate percentage and ensure it's a number
+        // Calculate percentage
         $objective = $event->getDonationObjective();
         $percentage = 0;
         if ($objective > 0) {
@@ -203,12 +206,78 @@ final class EventController extends AbstractController
         $event->currentDonations = (float)$donations;
         $event->donationPercentage = round($percentage, 1);
 
-        // Debug information
-        dump($event->currentDonations);
-        dump($event->donationPercentage);
-
         return $this->render('frontOffice/event/_quick_view_modal.html.twig', [
-            'event' => $event,
+            'event' => $event
         ]);
+    }
+
+    #[Route('/generate-event', name: 'generate_event', methods: ['POST'])]
+    public function generateEvent(Request $request, GeminiChatbot $chatbot): JsonResponse
+    {
+        try {
+            $data = json_decode($request->getContent(), true);
+            $prompt = $data['prompt'] ?? '';
+
+            if (!$prompt) {
+                throw new \Exception('Prompt is required');
+            }
+
+            $aiPrompt = "You are an event planning assistant. Generate a JSON object for an event based on this description: {$prompt}. 
+                         Format your response as a valid JSON object with NO additional text or explanation. Use this exact structure:
+                         {
+                             \"titre\": \"[title]\",
+                             \"description\": \"[description]\",
+                             \"eventMission\": \"[mission]\",
+                             \"lieu\": \"[location]\",
+                             \"nombreBillets\": [number],
+                             \"seatprice\": [price],
+                             \"donation_objective\": [goal]
+                         }
+                         Replace the placeholders with appropriate values. nombreBillets should be between 50-500, seatprice between 10-200, and donation_objective between 1000-50000.";
+
+            $response = $chatbot->get_response($aiPrompt);
+            
+            // Log the raw response for debugging
+            error_log('Raw AI Response: ' . $response);
+
+            // Try to extract JSON from the response
+            if (preg_match('/\{.*\}/s', $response, $matches)) {
+                $jsonStr = $matches[0];
+                // Clean the JSON string
+                $jsonStr = preg_replace('/[\x00-\x1F\x7F]/u', '', $jsonStr);
+                $eventData = json_decode($jsonStr, true);
+
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    throw new \Exception('Invalid JSON format: ' . json_last_error_msg());
+                }
+
+                // Validate required fields
+                $requiredFields = ['titre', 'description', 'eventMission', 'lieu', 'nombreBillets', 'seatprice', 'donation_objective'];
+                foreach ($requiredFields as $field) {
+                    if (!isset($eventData[$field])) {
+                        throw new \Exception("Missing required field: {$field}");
+                    }
+                }
+
+                // Ensure numerical fields are numbers
+                $eventData['nombreBillets'] = (int)$eventData['nombreBillets'];
+                $eventData['seatprice'] = (float)$eventData['seatprice'];
+                $eventData['donation_objective'] = (float)$eventData['donation_objective'];
+
+                return new JsonResponse([
+                    'success' => true,
+                    'event' => $eventData
+                ]);
+            }
+
+            throw new \Exception('No valid JSON found in AI response');
+
+        } catch (\Exception $e) {
+            error_log('Generation error: ' . $e->getMessage());
+            return new JsonResponse([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
     }
 }

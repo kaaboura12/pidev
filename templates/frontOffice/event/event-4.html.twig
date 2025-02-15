@@ -20,9 +20,36 @@
         </div>
     </div>
 
+    <!-- Chat Widget -->
+    <div class="chat-widget">
+        <button class="chat-button" onclick="toggleChat()">
+            <i class="fas fa-comment-dots"></i>
+        </button>
+        
+        <div id="chatModal" class="chat-modal">
+            <div class="chat-header">
+                <h5><i class="fas fa-robot mr-2"></i> ArtXcape Assistant</h5>
+                <button class="close-chat" onclick="toggleChat()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="chatMessages" class="chat-messages">
+                <div class="message bot-message">
+                    Hello! 👋 How can I assist you today?
+                </div>
+            </div>
+            <div class="chat-footer">
+                <input type="text" id="userInput" placeholder="Type your message here...">
+                <button onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Quick View Modal -->
-    <div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-        <div class="modal-dialog modal-lg">
+    <div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true" data-bs-keyboard="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="text-center p-4">
                     <div class="spinner-border" role="status">
@@ -336,10 +363,13 @@
                         </div>
                     </div>
                     <div class="col-lg-auto">
-                        <div class="sec-btn">
+                        <div class="sec-btn d-flex align-items-center gap-3">
                             <a href="event.html" class="btn">
                                 VIEW ALL EVENTS   
                             </a>
+                            <button type="button" id="mobile-preview-toggle" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                <i class="fas fa-mobile-alt"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -358,13 +388,26 @@
                                 </div>
                                 <div class="event-card-details">
                                     <h3 class="event-card-title">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#quickViewModal" 
-                                           data-event-id="{{ event.idevent }}">{{ event.titre }}</a>
+                                        <a href="{{ path('event_quick_view', {'idevent': event.idevent}) }}" 
+                                           data-bs-toggle="modal" 
+                                           data-bs-target="#quickViewModal">
+                                            {{ event.titre }}
+                                        </a>
                                     </h3>
                                     <div class="event-meta">
-                                        <span class="event-card-location">
-                                            <i class="fas fa-map-marker-alt me-2"></i>{{ event.lieu }}
-                                        </span>
+                                        <div class="location-wrapper">
+                                            <span class="event-location-text">
+                                                <i class="fas fa-map-marker-alt me-2"></i>{{ event.lieu }}
+                                            </span>
+                                            <button type="button" 
+                                                    class="btn-gps" 
+                                                    data-location="{{ event.lieu }}" 
+                                                    data-title="{{ event.titre }}"
+                                                    title="View on map"
+                                            >
+                                                <i class="fas fa-location-arrow"></i>
+                                            </button>
+                                        </div>
                                         <span class="event-seats ms-4">
                                             <i class="fas fa-ticket-alt me-2"></i>Available Seats: {{ event.nombreBillets }}
                                         </span>
@@ -418,7 +461,7 @@
                                 </div>
                                 <div class="event-card-thumb">
                                     {% if event.image %}
-                                        <img src="{{ asset('uploads/events/' ~ event.image) }}" alt="{{ event.titre }}">
+                                        <img src="{{ asset('uploads/images/' ~ event.image) }}" alt="{{ event.titre }}">
                                     {% else %}
                                         <img src="{{ asset('assets/img/event/event-thumb-1-1.png') }}" alt="Default Event Image">
                                     {% endif %}
@@ -434,17 +477,614 @@
             </div>
         </div>
 
+        <div id="mobile-preview-container" class="d-none">
+            <div id="mobile-frame">
+                <div class="mobile-frame-header">
+                    <div class="mobile-notch"></div>
+                    <button class="mobile-close-btn">×</button>
+                </div>
+                <div id="mobile-content">
+                </div>
+            </div>
+        </div>
+
 {% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('assets/css/custom-events.css') }}">
+    <link rel="stylesheet" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <style>
+        .chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff8c42, #ff5e14);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 140, 66, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .chat-button:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-modal {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 15px;
+            background: linear-gradient(135deg, #ff8c42, #ff5e14);
+            color: white;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Jost', sans-serif;
+        }
+
+        .chat-header h5 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: calc(100% - 120px);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 94, 20, 0.5) transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 94, 20, 0.5);
+            border-radius: 3px;
+        }
+
+        .message {
+            margin: 0;
+            padding: 12px 16px;
+            border-radius: 15px;
+            max-width: 85%;
+            word-wrap: break-word;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease-out;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #ff8c42, #ff5e14);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message {
+            background: #f5f5f5;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+        }
+
+        .chat-footer {
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #eee;
+            background: white;
+            position: relative;
+            z-index: 2;
+        }
+
+        .chat-footer input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            margin-right: 8px;
+        }
+
+        .chat-footer button {
+            background: linear-gradient(135deg, #ff8c42, #ff5e14);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-chat {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .close-chat:hover {
+            opacity: 1;
+        }
+
+        /* Add map modal styles */
+        .map-modal .modal-dialog {
+            max-width: 800px;
+            margin-top: 50px;
+        }
+        
+        .map-container {
+            width: 100%;
+            height: 400px;
+            position: relative;
+            background: #f8f9fa;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        #mapContainer {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .location-wrapper {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background-color: rgba(255, 94, 20, 0.1);
+            padding: 5px 12px;
+            border-radius: 4px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .event-location-text {
+            color: #444;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            margin-right: 5px;
+        }
+
+        .event-location-text i {
+            color: #ff5e14;
+        }
+
+        .btn-gps {
+            cursor: pointer;
+            background: linear-gradient(135deg, #ff8c42, #ff5e14);
+            color: white;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            font-size: 0.8rem;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 2px 4px rgba(255, 94, 20, 0.2);
+        }
+        
+        .btn-gps:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(255, 94, 20, 0.3);
+            background: linear-gradient(135deg, #ff9d5c, #ff7a42);
+            color: white;
+        }
+        
+        .btn-gps:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 94, 20, 0.3);
+        }
+
+        .modal-content {
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .map-modal .modal-body {
+            padding: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #mobile-preview-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 999999 !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: all;
+            backdrop-filter: blur(5px);
+        }
+
+        #mobile-frame {
+            width: 375px;
+            height: 667px;
+            background: #fff;
+            border-radius: 40px;
+            border: 12px solid #333;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+            transform: translateZ(0);
+        }
+
+        .mobile-frame-header {
+            height: 24px;
+            background: #333;
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .mobile-close-btn {
+            position: absolute;
+            right: 10px;
+            top: 0;
+            color: #fff;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0 8px;
+            line-height: 24px;
+            z-index: 1000;
+        }
+
+        .mobile-close-btn:hover {
+            color: #ff5e14;
+        }
+
+        #mobile-content {
+            width: 100%;
+            height: calc(100% - 24px);
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Mobile-specific styles for the content */
+        #mobile-content .event-area-1 {
+            padding: 15px 0;
+            background: transparent;
+        }
+
+        #mobile-content .container {
+            padding: 0 15px;
+        }
+
+        #mobile-content .event-card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+
+        #mobile-content .event-card-thumb {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        #mobile-content .event-card-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #mobile-content .event-card-date {
+            background: linear-gradient(135deg, #ff8c42, #ff5e14);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        #mobile-content .event-card-date .date {
+            font-size: 24px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #mobile-content .event-card-details {
+            padding: 15px;
+        }
+
+        #mobile-content .event-card-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        #mobile-content .event-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        #mobile-content .location-wrapper {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        #mobile-content .event-seats {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: inline-block;
+        }
+
+        #mobile-content .event-description {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        #mobile-content .event-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        #mobile-content .btn {
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        #mobile-content .donation-progress-wrapper {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        #mobile-content .progress-container {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        #mobile-content .progress-bar {
+            height: 100%;
+            background: linear-gradient(135deg, #ff8c42, #ff5e14);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        #mobile-content .donation-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Add smooth scrollbar */
+        #mobile-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        #mobile-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #mobile-content::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+        }
+
+        .location-text {
+            transition: color 0.3s ease;
+        }
+        
+        .location-text:hover {
+            color: #ff5e14 !important;
+        }
+        
+        .qr-wrapper {
+            display: inline-block;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: white;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        #qrCode {
+            min-height: 180px;
+            min-width: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #qrCode img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+        
+        #qrCodeContainer {
+            transition: all 0.3s ease;
+        }
+    </style>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
+    <!-- Add HERE Maps scripts -->
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            initializeAll();
+
+            // Initialize the modal with specific options
+            const quickViewModal = new bootstrap.Modal(document.getElementById('quickViewModal'), {
+                keyboard: true,
+                backdrop: true,
+                focus: true
+            });
+
+            // Handle quick view links
+            document.querySelectorAll('[data-bs-target="#quickViewModal"]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('href');
+                    const modalElement = document.getElementById('quickViewModal');
+                    const modalContent = modalElement.querySelector('.modal-content');
+                    
+                    // Show loading spinner
+                    modalContent.innerHTML = `
+                        <div class="text-center p-4">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Load content
+                    fetch(url)
+                        .then(response => response.text())
+                        .then(html => {
+                            modalContent.innerHTML = html;
+                        })
+                        .catch(error => {
+                            modalContent.innerHTML = `
+                                <div class="modal-body">
+                                    <p class="text-center text-danger">Error loading event details. Please try again.</p>
+                                </div>
+                            `;
+                            console.error('Error:', error);
+                        });
+                    
+                    // Show modal
+                    quickViewModal.show();
+                });
+            });
+
+            // Add global modal cleanup handlers
+            document.querySelectorAll('.modal').forEach(modalElement => {
+                modalElement.addEventListener('hidden.bs.modal', function () {
+                    document.body.classList.remove('modal-open');
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    backdrops.forEach(backdrop => backdrop.remove());
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                });
+            });
+        });
+        
+        function initializeAll() {
+            // Clear any existing event listeners
+            const mapButtons = document.querySelectorAll('.btn-gps');
+            mapButtons.forEach(button => {
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+            });
+
+            // Add new event listeners
+            document.querySelectorAll('.btn-gps').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const location = this.dataset.location;
+                    const eventTitle = this.dataset.title;
+                    console.log('GPS button clicked:', location, eventTitle);
+                    showLocationOnMap(location, eventTitle);
+                });
+            });
+
+            // Initialize other event handlers
+            initializeEventHandlers();
+        }
+
+        function initializeEventHandlers() {
             {% for event in events %}
                 const seatsInput{{ event.idevent }} = document.querySelector('#reservationModal{{ event.idevent }} #seats');
                 const totalAmount{{ event.idevent }} = document.querySelector('#totalAmount{{ event.idevent }}');
@@ -458,69 +1098,312 @@
                     });
                 }
             {% endfor %}
+        }
 
-            // Quick view modal handler with improved cleanup
-            const quickViewModal = document.getElementById('quickViewModal');
-            if (quickViewModal) {
-                const bsModal = new bootstrap.Modal(quickViewModal);
+        // Initialize HERE Maps
+        const platform = new H.service.Platform({
+            'apikey': '{{ here_maps_api_key }}'
+        });
+
+        function showLocationOnMap(location, eventTitle) {
+            // Remove any existing modals first
+            const existingModals = document.querySelectorAll('.map-modal');
+            existingModals.forEach(modal => modal.remove());
+            const existingBackdrops = document.querySelectorAll('.modal-backdrop');
+            existingBackdrops.forEach(backdrop => backdrop.remove());
+            
+            console.log('Searching for location:', location);
+            
+            // Get an instance of the geocoding service
+            const service = platform.getSearchService();
+
+            service.geocode({
+                q: location
+            }, (result) => {
+                console.log('Geocoding result:', result);
                 
-                // Handle modal opening
-                document.querySelectorAll('[data-bs-target="#quickViewModal"]').forEach(button => {
-                    button.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        const eventId = this.getAttribute('data-event-id');
-                        
-                        // Show loading spinner
-                        quickViewModal.querySelector('.modal-content').innerHTML = `
-                            <div class="text-center p-4">
-                                <div class="spinner-border" role="status">
-                                    <span class="visually-hidden">Loading...</span>
+                if (!result.items || result.items.length === 0) {
+                    alert('Location not found. Please try a different address.');
+                    return;
+                }
+
+                // Create the map modal
+                const modalHtml = `
+                    <div class="modal fade map-modal" id="mapModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">
+                                        <i class="fas fa-map-marker-alt me-2"></i>
+                                        ${eventTitle}
+                                        <div class="text-muted fs-6 location-text" style="cursor: pointer;" onclick="toggleQRCode('${encodeURIComponent(location)}')">
+                                            <i class="fas fa-map-pin me-1"></i>${location}
+                                            <small class="d-block text-primary mt-1">
+                                                <i class="fas fa-qrcode me-1"></i>Click for mobile directions
+                                            </small>
+                                        </div>
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="map-container">
+                                        <div id="mapContainer"></div>
+                                    </div>
+                                    <div id="qrCodeContainer" class="text-center mt-3" style="display: none;">
+                                        <div class="qr-wrapper p-3 bg-light rounded">
+                                            <div id="qrCode" class="d-inline-block"></div>
+                                            <p class="text-muted small mt-2 mb-0">
+                                                Scan with your phone's camera to get directions
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        `;
-                        
-                        bsModal.show();
+                        </div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                const mapModal = document.getElementById('mapModal');
 
-                        // Fetch event details
-                        fetch(`/event/quick-view/${eventId}`)
-                            .then(response => response.text())
-                            .then(html => {
-                                quickViewModal.querySelector('.modal-content').innerHTML = html;
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                quickViewModal.querySelector('.modal-content').innerHTML = `
-                                    <div class="modal-body">
-                                        <p class="text-danger">Error loading event details.</p>
-                                    </div>
-                                `;
-                            });
-                    });
-                });
-
-                // Handle modal cleanup when hidden
-                quickViewModal.addEventListener('hidden.bs.modal', function () {
-                    document.body.classList.remove('modal-open');
-                    const modalBackdrops = document.getElementsByClassName('modal-backdrop');
-                    while(modalBackdrops.length > 0){
-                        modalBackdrops[0].parentNode.removeChild(modalBackdrops[0]);
+                // Clean up when modal is hidden
+                mapModal.addEventListener('hidden.bs.modal', function () {
+                    this.remove();
+                    // Remove modal backdrop if it exists
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) {
+                        backdrop.remove();
                     }
+                    // Re-enable body scrolling
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
                 });
 
-                // Handle switching between modals
-                quickViewModal.addEventListener('show.bs.modal', function () {
-                    // Close any other open modals
-                    const openModals = document.querySelectorAll('.modal.show');
-                    openModals.forEach(modal => {
-                        if (modal !== quickViewModal) {
-                            const bsInstance = bootstrap.Modal.getInstance(modal);
-                            if (bsInstance) {
-                                bsInstance.hide();
-                            }
+                // Show the modal
+                const bsModal = new bootstrap.Modal(mapModal);
+                
+                // Wait for modal to be fully shown before initializing map
+                mapModal.addEventListener('shown.bs.modal', function () {
+                    // Get the default map types from the platform object
+                    const defaultLayers = platform.createDefaultLayers();
+
+                    // Initialize the map
+                    const map = new H.Map(
+                        document.getElementById('mapContainer'),
+                        defaultLayers.vector.normal.map,
+                        {
+                            zoom: 15,
+                            center: { lat: result.items[0].position.lat, lng: result.items[0].position.lng }
                         }
-                    });
+                    );
+
+                    // Add window resize handler
+                    window.addEventListener('resize', () => map.getViewPort().resize());
+
+                    // Add map interaction
+                    const behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+                    const ui = H.ui.UI.createDefault(map, defaultLayers);
+
+                    // Add a marker for the location
+                    const marker = new H.map.Marker({ lat: result.items[0].position.lat, lng: result.items[0].position.lng });
+                    map.addObject(marker);
+
+                    // Add info bubble
+                    const bubble = new H.ui.InfoBubble(
+                        { lat: result.items[0].position.lat, lng: result.items[0].position.lng },
+                        { content: `<div style="padding: 10px;"><b>${eventTitle}</b><br>${location}</div>` }
+                    );
+                    ui.addBubble(bubble);
+                    
+                    // Force map to redraw
+                    window.dispatchEvent(new Event('resize'));
                 });
+                
+                bsModal.show();
+            }, (error) => {
+                console.error('Geocoding error:', error);
+                alert('Error finding location. Please try again.');
+            });
+        }
+
+        // Chat Widget Functions
+        function toggleChat() {
+            const chatModal = document.getElementById('chatModal');
+            const chatMessages = document.getElementById('chatMessages');
+            
+            if (chatModal.style.display === 'flex') {
+                chatModal.style.display = 'none';
+            } else {
+                chatModal.style.display = 'flex';
+                // Reset scroll position when opening chat
+                setTimeout(() => {
+                    scrollToBottom(chatMessages);
+                }, 100);
+            }
+        }
+
+        async function sendMessage() {
+            const userInput = document.getElementById('userInput');
+            const chatMessages = document.getElementById('chatMessages');
+            const message = userInput.value.trim();
+
+            if (!message) return;
+
+            // Add user message to chat
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user-message';
+            userMessageDiv.textContent = message;
+            chatMessages.appendChild(userMessageDiv);
+
+            // Scroll to bottom after user message
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Clear input
+            userInput.value = '';
+
+            // Show loading indicator
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message bot-message';
+            loadingDiv.textContent = 'Typing...';
+            chatMessages.appendChild(loadingDiv);
+
+            // Scroll to show loading message
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+
+                // Replace loading with actual response
+                loadingDiv.textContent = data.response;
+                
+                // Ensure smooth scroll to bottom after response
+                setTimeout(() => {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 100);
+            } catch (error) {
+                loadingDiv.textContent = 'Sorry, I encountered an error. Please try again.';
+                console.error('Chat error:', error);
+            }
+        }
+
+        // Add this function to handle smooth scrolling
+        function scrollToBottom(element) {
+            element.scrollTop = element.scrollHeight;
+        }
+
+        // Add enter key listener for chat input
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
             }
         });
+
+        document.getElementById('mobile-preview-toggle').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const container = document.getElementById('mobile-preview-container');
+            const content = document.getElementById('mobile-content');
+            
+            if (container.classList.contains('d-none')) {
+                container.classList.remove('d-none');
+                
+                const mainContent = document.querySelector('.event-area-1');
+                if (mainContent) {
+                    const clonedContent = mainContent.cloneNode(true);
+                    
+                    // Clean up the cloned content
+                    clonedContent.style.transform = 'none';
+                    
+                    // Remove unnecessary elements
+                    const unnecessaryElements = clonedContent.querySelectorAll('.sec-btn, .title-area');
+                    unnecessaryElements.forEach(el => el.remove());
+                    
+                    // Adjust containers
+                    const containers = clonedContent.querySelectorAll('.container');
+                    containers.forEach(container => {
+                        container.style.padding = '0 15px';
+                        container.style.width = '100%';
+                        container.style.maxWidth = '100%';
+                    });
+                    
+                    // Adjust cards
+                    const cards = clonedContent.querySelectorAll('.event-card');
+                    cards.forEach(card => {
+                        // Reorder card elements for mobile
+                        const thumb = card.querySelector('.event-card-thumb');
+                        const date = card.querySelector('.event-card-date');
+                        const details = card.querySelector('.event-card-details');
+                        
+                        if (thumb && date && details) {
+                            card.innerHTML = '';
+                            card.appendChild(thumb);
+                            card.appendChild(date);
+                            card.appendChild(details);
+                        }
+                    });
+                    
+                    content.innerHTML = '';
+                    content.appendChild(clonedContent);
+                }
+                
+                document.body.style.overflow = 'hidden';
+            }
+        });
+
+        // Close preview when clicking outside the frame or close button
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('mobile-preview-container');
+            if (e.target === container || e.target.classList.contains('mobile-close-btn')) {
+                container.classList.add('d-none');
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        function toggleQRCode(location) {
+            const qrContainer = document.getElementById('qrCodeContainer');
+            const qrCodeDiv = document.getElementById('qrCode');
+            
+            if (qrContainer.style.display === 'none') {
+                // Clear any existing QR code
+                qrCodeDiv.innerHTML = '';
+                
+                // Show container first
+                qrContainer.style.display = 'block';
+                
+                // Add a small delay to ensure container is visible
+                setTimeout(() => {
+                    try {
+                        // Generate Google Maps URL
+                        const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${decodeURIComponent(location)}`;
+                        
+                        // Generate QR code
+                        new QRCode(qrCodeDiv, {
+                            text: mapsUrl,
+                            width: 180,  // Increased size for better visibility
+                            height: 180,
+                            colorDark: "#000000",
+                            colorLight: "#ffffff",
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+                        
+                        console.log('QR Code generated for URL:', mapsUrl);
+                    } catch (error) {
+                        console.error('Error generating QR code:', error);
+                        qrCodeDiv.innerHTML = '<p class="text-danger">Error generating QR code. Please try again.</p>';
+                    }
+                }, 100);
+            } else {
+                qrContainer.style.display = 'none';
+            }
+        }
     </script>
 {% endblock %}

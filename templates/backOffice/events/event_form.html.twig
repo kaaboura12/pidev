@@ -150,7 +150,7 @@
     <div class="content-wrapper">
         <div class="event-form-container">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h1 class="page-title">
                         {% if event.idevent %}
                             <i class="mdi mdi-pencil-box"></i> Modifier l'événement
@@ -158,6 +158,9 @@
                             <i class="mdi mdi-plus-box"></i> Créer un nouvel événement
                         {% endif %}
                     </h1>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#aiGeneratorModal">
+                        <i class="mdi mdi-robot"></i> AI Generator
+                    </button>
                 </div>
                 <div class="card-body">
                     {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
@@ -280,6 +283,30 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="aiGeneratorModal" tabindex="-1" role="dialog" aria-labelledby="aiGeneratorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="aiGeneratorModalLabel">AI Event Generator</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="aiPrompt">Describe your event:</label>
+                    <textarea class="form-control" id="aiPrompt" rows="3" placeholder="Example: Create a charity gala event for children's education"></textarea>
+                </div>
+                <div id="generationStatus" class="alert" style="display: none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="generateButton">Generate</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block javascripts %}
@@ -318,6 +345,79 @@
                     }
                 });
             }
+
+            // AI Generator functionality
+            const generateButton = document.getElementById('generateButton');
+            const promptInput = document.getElementById('aiPrompt');
+            const statusDiv = document.getElementById('generationStatus');
+
+            generateButton.addEventListener('click', async function() {
+                const prompt = promptInput.value;
+                if (!prompt) {
+                    alert('Please enter a description for your event');
+                    return;
+                }
+
+                // Show loading state
+                generateButton.disabled = true;
+                statusDiv.className = 'alert alert-info';
+                statusDiv.style.display = 'block';
+                statusDiv.textContent = 'Generating event details...';
+
+                try {
+                    const response = await fetch('/generate-event', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ prompt: prompt })
+                    });
+
+                    // Check if response is ok before trying to parse JSON
+                    if (!response.ok) {
+                        const contentType = response.headers.get('content-type');
+                        if (contentType && contentType.includes('application/json')) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message || 'Generation failed');
+                        } else {
+                            const text = await response.text();
+                            console.error('Raw error response:', text);
+                            throw new Error('Server error occurred');
+                        }
+                    }
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Fill in the form fields
+                        document.querySelector('[name="eventaddmodify[titre]"]').value = data.event.titre;
+                        document.querySelector('[name="eventaddmodify[description]"]').value = data.event.description;
+                        document.querySelector('[name="eventaddmodify[eventMission]"]').value = data.event.eventMission;
+                        document.querySelector('[name="eventaddmodify[lieu]"]').value = data.event.lieu;
+                        document.querySelector('[name="eventaddmodify[nombreBillets]"]').value = data.event.nombreBillets;
+                        document.querySelector('[name="eventaddmodify[seatprice]"]').value = data.event.seatprice;
+                        document.querySelector('[name="eventaddmodify[donation_objective]"]').value = data.event.donation_objective;
+
+                        statusDiv.className = 'alert alert-success';
+                        statusDiv.textContent = 'Event details generated successfully!';
+                        
+                        // Close modal after a short delay
+                        setTimeout(() => {
+                            $('#aiGeneratorModal').modal('hide');
+                        }, 1500);
+                    } else {
+                        throw new Error(data.message || 'Generation failed');
+                    }
+                } catch (error) {
+                    statusDiv.className = 'alert alert-danger';
+                    console.error('Generation error:', error);
+                    statusDiv.textContent = error.message || 'An error occurred while generating event details';
+                } finally {
+                    generateButton.disabled = false;
+                }
+            });
         });
     </script>
 {% endblock %}
