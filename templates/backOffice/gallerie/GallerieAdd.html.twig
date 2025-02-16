@@ -1,0 +1,37 @@
+{% extends 'base2.html.twig' %}
+{% block body %}
+<div class="card-body">
+    <div>
+        <h4 class="card-title"></h4>
+        <br><br><br>
+        <h1>{{titre}} une Galerie</h1>
+        <p class="card-description"></p>
+
+        {{ form_start(form) }}
+        
+        <div class="form-group">
+            {{ form_label(form.nom, 'Nom de la Galerie') }}
+            {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Nom de la galerie'}}) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.datecreation, 'Date de Création') }}
+            {{ form_widget(form.datecreation, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.description, 'Description') }}
+            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.user, 'Utilisateur') }}
+            {{ form_widget(form.user, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <button type="submit" class="btn btn-inverse-primary btn-fw">{{titre}}</button>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

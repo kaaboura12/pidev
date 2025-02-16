@@ -1,0 +1,448 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<!--********************************
+   		Code Start From Here 
+	******************************** -->
+
+
+    <!-- Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    <!-- Cursor End -->
+
+    <!--==============================
+     Preloader
+    ==============================-->
+    <div class="preloader">
+        <div class="preloader-inner">
+            <img src="assets/img/logo-white.svg" alt="Artvista">
+            <span class="loader"></span>
+        </div>
+    </div>
+
+    <div id="smooth-wrapper">
+        <div id="smooth-content">
+        <!--==============================
+        Breadcumb
+        ============================== -->
+        <div class="breadcumb-wrapper text-center" data-bg-src="assets/img/bg/breadcrumb-bg.png">
+            <div class="container">
+                <div class="breadcumb-content">
+                    <h1 class="breadcumb-title">Nos Formations</h1>
+                </div>
+                <ul class="breadcumb-menu">
+                    <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                    <li class="active">Formations</li>
+                </ul>                
+            </div>
+        </div>
+
+        <!--==============================
+        Formation List
+        ============================== -->
+        <section class="space-top space-extra-bottom">
+            <div class="container">
+                <div class="row gy-4">
+                    {% for formation in formations %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="vs-blog blog-style1">
+                                <div class="blog-content">
+                                    <div class="blog-meta">
+                                        <a href="#"><i class="far fa-calendar-alt"></i>{{ formation.dateDebut|date('d/m/Y') }}</a>
+                                        <a href="#"><i class="fas fa-tag"></i>{{ formation.categorie.nom }}</a>
+                                    </div>
+                                    <h3 class="blog-title h5 font-body">{{ formation.titre }}</h3>
+                                    <p class="blog-text">{{ formation.description|slice(0, 100) }}...</p>
+                                    <div class="blog-bottom">
+                                        <div class="price-tag">{{ formation.prix }} TND</div>
+                                        <div class="participants">
+                                            <i class="fas fa-users"></i> {{ formation.nbrpart }} places
+                                        </div>
+                                    </div>
+                                    <a href="#QuickView-{{ formation.id }}" class="link-btn popup-content">En savoir plus<i class="far fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--==============================
+                        Quick View Modal for each formation
+                        ============================== -->
+                        <div id="QuickView-{{ formation.id }}" class="white-popup mfp-hide">
+                            <div class="container bg-white">
+                                <div class="row gx-50">
+                                    <div class="col-lg-6">
+                                        <div class="product-big-img">
+                                            {% if formation.video %}
+                                                {% set video_id = formation.video|split('/')|last|split('=')|last %}
+                                                <div class="video-preview">
+                                                    <img src="https://img.youtube.com/vi/{{ video_id }}/maxresdefault.jpg" alt="Aperçu de la formation" class="video-thumbnail">
+                                                    <div class="video-overlay">
+                                                        <i class="fas fa-play-circle"></i>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <div class="img">
+                                                    <img src="assets/img/product/product-details1.png" alt="Formation Image">
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 align-self-center">
+                                        <div class="product-about">
+                                            <p class="price">{{ formation.prix }} TND</p>
+                                            <h2 class="product-title">{{ formation.titre }}</h2>
+                                            <p class="text">{{ formation.description }}</p>
+                                            <div class="checklist">
+                                                <ul>
+                                                    <li><i class="far fa-check-circle"></i> Date début: {{ formation.dateDebut|date('d/m/Y') }}</li>
+                                                    <li><i class="far fa-check-circle"></i> Date fin: {{ formation.dateFin|date('d/m/Y') }}</li>
+                                                    <li><i class="far fa-check-circle"></i> Places disponibles: {{ formation.nbrpart }}</li>
+                                                </ul>
+                                            </div>
+                                            <div class="actions">
+                                                {% if app.user %}
+                                                    {% set isInscrit = false %}
+                                                    {% for inscription in userInscriptions %}
+                                                        {% if inscription.formation.id == formation.id %}
+                                                            {% set isInscrit = true %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    
+                                                    {% if not isInscrit %}
+                                                        <form action="{{ path('formation_inscription', {'id': formation.id}) }}" method="GET" class="inscription-form">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token('inscription' ~ formation.id) }}">
+                                                            <input type="hidden" name="user_id" value="{{ app.user.id }}">
+                                                            <button type="submit" class="btn" {% if formation.nbrpart <= 0 %}disabled{% endif %}>
+                                                                {% if formation.nbrpart <= 0 %}
+                                                                    COMPLET
+                                                                {% else %}
+                                                                    S'INSCRIRE <i class="fas fa-user-plus ms-2"></i>
+                                                                {% endif %}
+                                                            </button>
+                                                        </form>
+                                                    {% else %}
+                                                        <div class="inscription-status">
+                                                            <span class="badge bg-success">
+                                                                <i class="fas fa-check-circle"></i> Vous êtes inscrit à cette formation
+                                                            </span>
+                                                        </div>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <a href="{{ path('app_login') }}" class="btn">
+                                                        CONNECTEZ-VOUS POUR VOUS INSCRIRE <i class="fas fa-sign-in-alt ms-2"></i>
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                            <div class="product_meta">
+                                                <span class="posted_in">Catégorie: <a href="#" rel="tag">{{ formation.categorie.nom }}</a></span>
+                                                {% if formation.video %}
+                                                    {% if app.user %}
+                                                        {% set isInscrit = false %}
+                                                        {% for inscription in formation.inscriptions %}
+                                                            {% if inscription.user == app.user %}
+                                                                {% set isInscrit = true %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        
+                                                        {% if isInscrit %}
+                                                            <span class="video_link">
+                                                                <a href="{{ formation.video }}" target="_blank" class="btn btn-sm btn-success mt-2">
+                                                                    <i class="fas fa-play-circle"></i> Voir la vidéo du cours
+                                                                </a>
+                                                            </span>
+                                                        {% else %}
+                                                            <div class="alert alert-warning mt-2">
+                                                                <i class="fas fa-lock"></i> Inscrivez-vous à cette formation pour accéder à la vidéo du cours
+                                                            </div>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <div class="alert alert-info mt-2">
+                                                            <i class="fas fa-lock"></i> Connectez-vous et inscrivez-vous pour accéder à la vidéo du cours
+                                                        </div>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button title="Close (Esc)" type="button" class="mfp-close">×</button>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="col-12 text-center">
+                            <div class="error-content">
+                                <h3>Aucune formation disponible</h3>
+                                <p>Revenez bientôt pour découvrir nos nouvelles formations.</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+         <!-- Scroll To Top -->
+    <div class="scroll-top">
+        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" style="transition: stroke-dashoffset 10ms linear 0s; stroke-dasharray: 307.919, 307.919; stroke-dashoffset: 307.919;"></path>
+        </svg>
+    </div>
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Card Styles */
+        .vs-blog {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .vs-blog:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .blog-content {
+            padding: 25px;
+        }
+
+        /* Meta Information */
+        .blog-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .blog-meta a {
+            color: #666;
+            font-size: 0.9em;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .blog-meta a i {
+            color: #DF6D14;
+        }
+
+        /* Title */
+        .blog-title {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 12px;
+            font-weight: 600;
+            line-height: 1.4;
+            min-height: 2.8em;
+        }
+
+        /* Description */
+        .blog-text {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            min-height: 4.8em;
+        }
+
+        /* Bottom Section */
+        .blog-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-top: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+
+        .price-tag {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #DF6D14;
+        }
+
+        .participants {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .participants i {
+            color: #DF6D14;
+        }
+
+        /* Link Button */
+        .link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #DF6D14;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .link-btn:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #DF6D14;
+            transition: width 0.3s ease;
+        }
+
+        .link-btn:hover {
+            color: #F17B25;
+        }
+
+        .link-btn:hover:after {
+            width: 100%;
+        }
+
+        .link-btn:hover i {
+            transform: translateX(5px);
+        }
+
+        .link-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        /* Modal Styles */
+        .white-popup {
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .product-big-img {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .video-preview {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .video-overlay {
+            background: rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .video-overlay:hover {
+            background: rgba(0,0,0,0.5);
+        }
+
+        .product-title {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .checklist ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+        }
+
+        .checklist li i {
+            color: #DF6D14;
+            font-size: 1.1em;
+        }
+
+        /* Section Header */
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .section-subtitle {
+            color: #666;
+            font-size: 1.1em;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .blog-content {
+                padding: 20px;
+            }
+
+            .blog-title {
+                font-size: 1.1em;
+            }
+
+            .price-tag {
+                font-size: 1.2em;
+            }
+        }
+
+        /* Button Styles */
+        .btn {
+            background: linear-gradient(45deg, #DF6D14, #F17B25);
+            border: none;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(223, 109, 20, 0.3);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Badge Styles */
+        .badge.bg-success {
+            background: linear-gradient(45deg, #DF6D14, #F17B25) !important;
+        }
+
+        /* Alert Styles */
+        .alert-warning {
+            background-color: rgba(223, 109, 20, 0.1);
+            border: 1px solid rgba(223, 109, 20, 0.2);
+            color: #DF6D14;
+        }
+
+        .alert-info {
+            background-color: rgba(223, 109, 20, 0.1);
+            border: 1px solid rgba(223, 109, 20, 0.2);
+            color: #DF6D14;
+        }
+    </style>
+{% endblock %}
