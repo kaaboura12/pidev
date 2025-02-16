@@ -1,0 +1,171 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <!--==============================
+    Breadcumb
+    ============================== -->
+    <div class="breadcumb-wrapper text-center" data-bg-src="/assets/frontOffice/img/bg/breadcrumb-bg.png">
+        <div class="container">
+            <div class="breadcumb-content">
+                <h1 class="breadcumb-title">Articles de la Galerie {{ galerie.nom }}</h1>
+                
+            </div>
+            <ul class="breadcumb-menu">
+                <li><a href="{{ path('ma_galerie', {'id': app.user.id}) }}">Ma Galerie </a></li>
+            </ul>                
+        </div>
+    </div>
+
+    <!--==============================
+    Articles Section
+    ==============================-->
+    <div class="space-top space-extra-bottom">
+        <div class="container">
+            {% if articles is empty %}
+                <div class="text-center">
+                    <div class="no-articles-box bg-white">
+                        <img src="/assets/frontOffice/img/normal/empty-gallery.png" alt="Empty Gallery" class="mb-4" style="max-width: 200px;">
+                        <h3 class="h4 mb-4">Aucun article dans cette galerie</h3>
+                        <p class="mb-4">Commencez à ajouter des articles à votre galerie.</p>
+                        <a href="{{ path('add_article_front', {'galerieId': galerie.id}) }}" class="btn">Ajouter un article</a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center mb-4">
+                    <a href="{{ path('add_article_front', {'galerieId': galerie.id}) }}" class="btn btn-primary">
+                        <i class="far fa-plus-square me-2"></i>Ajouter un article
+                    </a>
+                </div>
+                <br></br>
+                <div class="row">
+                    {% for article in articles %}
+                        <div class="col-md-4 mb-30">
+                            <div class="gallery-card">
+                                <div class="gallery-img">
+                                    <img src="{{ asset('uploads/images/' ~ article.contenu) }}" alt="Article" >
+                                </div>
+                                <div class="gallery-content">
+                                    <h4 class="gallery-title">{{ article.titre }} - {{ article.prix }} Dt</h4>
+                                    <p class="gallery-text">{{ article.description|slice(0, 100) }}...</p>
+                                    <div class="gallery-meta">
+                                        <span><i class="far fa-calendar"></i> {{ article.datePub|date('d/m/Y') }}</span>
+                                        <span><i class="far fa-heart"></i> {{ article.nbrlikes }} likes</span>
+                                        <span><i class="far fa-folder"></i> {{ article.categorie }}</span>
+                                    </div>
+                                    <div class="gallery-actions mt-4">
+                                        <a href="{{ path('edit_article_front', {'id': article.id}) }}" class="btn-link">Modifier</a>
+                                        <a href="{{ path('front_delete_article', {'id': article.id}) }}" 
+                                           class="btn-link text-danger"
+                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet article ?');">
+                                            Supprimer
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <style>
+        .no-articles-box {
+            padding: 50px 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .gallery-card {
+            background: white;
+            border-radius: 15px;
+            overflow: visible;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .gallery-img {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .gallery-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-content {
+            padding: 20px;
+        }
+
+        .gallery-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .gallery-text {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .gallery-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .gallery-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .gallery-actions {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .btn-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            z-index: 20;
+            padding: 5px 10px;
+            display: inline-block;
+        }
+
+        .btn-link.text-danger {
+            color: #dc3545;
+        }
+
+        .breadcumb-subtitle {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .gallery-card * {
+            pointer-events: auto;
+        }
+
+        .gallery-actions .text-danger {
+            cursor: pointer;
+            pointer-events: auto;
+            position: relative;
+            z-index: 30;
+        }
+    </style>
+{% endblock %} 

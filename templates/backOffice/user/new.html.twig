@@ -1,0 +1,66 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Créer un nouvel utilisateur{% endblock %}
+
+{% block body %}
+    <h1>Créer un nouvel utilisateur</h1>
+
+    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+        {{ form_row(form.nom) }}
+        {{ form_row(form.prenom) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.password) }}
+
+        {# Section pour l'upload de la photo de profil #}
+        <div>
+            <label>Photo de profil</label>
+            {{ form_widget(form.photoFile, {'attr': {'id': 'upload'}}) }}
+        </div>
+
+        {# Affichage de l'image actuelle si elle existe #}
+        {% if user.photoDeProfile %}
+            <img id="preview" src="{{ asset('/uploads/images/' ~ user.photoDeProfile) }}" alt="Avatar" width="150">
+        {% else %}
+            <img id="preview" src="" alt="Aperçu de l'avatar" style="max-width: 100%; display: none;">
+        {% endif %}
+
+        <div>
+            <button type="submit">Enregistrer</button>
+        </div>
+    {{ form_end(form) }}
+
+    {# ===================== Ajouter Cropper.js ===================== #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let input = document.getElementById('upload');
+            let preview = document.getElementById('preview');
+            let cropper;
+
+            input.addEventListener('change', function(event) {
+                let file = event.target.files[0];
+                let reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+
+                    cropper = new Cropper(preview, {
+                        aspectRatio: 1, // Format carré pour l'avatar
+                        viewMode: 2,
+                        dragMode: 'move',
+                        responsive: true
+                    });
+                };
+
+                reader.readAsDataURL(file);
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,323 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}{{ event.idevent ? 'Modifier l\'événement' : 'Créer un événement' }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .event-form-container {
+            padding: 2rem;
+        }
+
+        .card {
+            background: #191c24;
+            border: 1px solid #2c2e33;
+        }
+
+        .form-section {
+            background: #191c24;
+            padding: 1.5rem;
+            border: 1px solid #2c2e33;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-section-title {
+            color: #ffffff;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            border-bottom: 1px solid #2c2e33;
+            padding-bottom: 0.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            color: #ffffff;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-control {
+            background-color: #2A3038;
+            border: 1px solid #2c2e33;
+            color: #ffffff;
+            border-radius: 0.25rem;
+            padding: 0.75rem 1.125rem;
+            font-size: 0.875rem;
+        }
+
+        .form-control:focus {
+            background-color: #2A3038;
+            border-color: #0090e7;
+            color: #ffffff;
+            box-shadow: none;
+        }
+
+        .btn-submit {
+            background: #0090e7;
+            color: #ffffff;
+            border: none;
+            padding: 0.875rem 2.5rem;
+            font-size: 0.875rem;
+            border-radius: 0.25rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: auto;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            background: #0078c1;
+            box-shadow: 0 0 15px rgba(0, 144, 231, 0.3);
+        }
+
+        .invalid-feedback {
+            color: #fc424a;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .image-preview {
+            max-width: 200px;
+            margin-top: 1rem;
+            border: 1px solid #2c2e33;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: auto;
+        }
+
+        .text-muted {
+            color: #6c7293 !important;
+            font-size: 0.75rem;
+        }
+
+        /* Custom styling for date and time inputs */
+        input[type="date"],
+        input[type="time"] {
+            background-color: #2A3038;
+            color: #ffffff;
+        }
+
+        /* Row spacing */
+        .row {
+            margin-left: -10px;
+            margin-right: -10px;
+        }
+
+        .row > div {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        /* Card header styling */
+        .card-header {
+            background: #191c24;
+            border-bottom: 1px solid #2c2e33;
+            padding: 1.5rem;
+        }
+
+        .page-title {
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin-bottom: 0;
+            font-weight: 500;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .event-form-container {
+                padding: 1rem;
+            }
+
+            .form-section {
+                padding: 1rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="event-form-container">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="page-title">
+                        {% if event.idevent %}
+                            <i class="mdi mdi-pencil-box"></i> Modifier l'événement
+                        {% else %}
+                            <i class="mdi mdi-plus-box"></i> Créer un nouvel événement
+                        {% endif %}
+                    </h1>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+                        
+                        {# Informations générales #}
+                        <div class="form-section">
+                            <h3 class="form-section-title">
+                                <i class="mdi mdi-information"></i> Informations générales
+                            </h3>
+                            
+                            <div class="form-group">
+                                {{ form_label(form.titre, 'Titre de l\'événement', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.titre) }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.description) }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.eventMission, 'Mission de l\'événement', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.eventMission, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.eventMission) }}
+                            </div>
+                        </div>
+
+                        {# Date et lieu #}
+                        <div class="form-section">
+                            <h3 class="form-section-title">
+                                <i class="mdi mdi-calendar-clock"></i> Date et lieu
+                            </h3>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form_label(form.dateEvenement, 'Date', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.dateEvenement, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.dateEvenement) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        {{ form_label(form.timestart, 'Heure de début', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.timestart, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.timestart) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.lieu, 'Lieu', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.lieu, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.lieu) }}
+                            </div>
+                        </div>
+
+                        {# Billets et tarifs #}
+                        <div class="form-section">
+                            <h3 class="form-section-title">
+                                <i class="mdi mdi-ticket"></i> Billets et tarifs
+                            </h3>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        {{ form_label(form.nombreBillets, 'Nombre de billets', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.nombreBillets, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.nombreBillets) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        {{ form_label(form.seatprice, 'Prix du billet', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.seatprice, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.seatprice) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        {{ form_label(form.donation_objective, 'Objectif de don', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.donation_objective, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.donation_objective) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# Image #}
+                        <div class="form-section">
+                            <h3 class="form-section-title">
+                                <i class="mdi mdi-image"></i> Image de l'événement
+                            </h3>
+                            
+                            <div class="form-group">
+                                {{ form_label(form.image, 'Image', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.image, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.image) }}
+                                {% if event.image is defined and event.image %}
+                                    <div class="image-preview mt-3">
+                                        <img src="{{ asset('uploads/images/' ~ event.image) }}" alt="Aperçu de l'image">
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Formats acceptés : JPG, PNG. Taille maximale : 5MB</small>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-submit">
+                                <i class="mdi mdi-content-save"></i>
+                                {{ event.idevent ? 'Mettre à jour l\'événement' : 'Créer l\'événement' }}
+                            </button>
+                        </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Image preview functionality
+            const imageInput = document.querySelector('input[type="file"]');
+            const previewContainer = document.querySelector('.image-preview');
+
+            if (imageInput) {
+                imageInput.addEventListener('change', function(e) {
+                    if (this.files && this.files[0]) {
+                        const reader = new FileReader();
+                        
+                        reader.onload = function(e) {
+                            if (!previewContainer) {
+                                const newPreview = document.createElement('div');
+                                newPreview.className = 'image-preview mt-3';
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.alt = 'Image preview';
+                                newPreview.appendChild(img);
+                                imageInput.parentNode.appendChild(newPreview);
+                            } else {
+                                const img = previewContainer.querySelector('img') || document.createElement('img');
+                                img.src = e.target.result;
+                                img.alt = 'Image preview';
+                                if (!previewContainer.querySelector('img')) {
+                                    previewContainer.appendChild(img);
+                                }
+                            }
+                        }
+                        
+                        reader.readAsDataURL(this.files[0]);
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}
