@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Connexion | ArtXcape</title>
+    <title>Réinitialisation du mot de passe | ArtXcape</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="{{ asset('assets/frontOffice/newimg/logoicon.png') }}">
@@ -40,11 +40,11 @@
             transform: translateY(-5px);
         }
 
-        /* Section Gauche - Image */
+        /* Section Gauche */
         .left-section {
             width: 40%;
             position: relative;
-            background: url('https://source.unsplash.com/random/800x1200/?art,escape') center/cover;
+            background: url('https://source.unsplash.com/random/800x1200/?art,security') center/cover;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -65,37 +65,42 @@
             z-index: -1;
         }
 
-        .welcome-text {
-            color: #fff;
-            z-index: 3;
+        .left-section .icon-container {
+            font-size: 64px;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
-        .welcome-text h2 {
+        .left-section h2 {
+            color: #fff;
             font-size: 28px;
             margin-bottom: 20px;
             font-weight: 600;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        .welcome-text p {
+        .left-section p {
+            color: #fff;
             font-size: 16px;
-            margin-bottom: 30px;
             line-height: 1.6;
+            margin-bottom: 30px;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            padding: 0 20px;
         }
 
-        /* Section Droite - Formulaire */
+        /* Section Droite */
         .right-section {
             width: 60%;
             padding: 40px 50px;
             background: #fff;
         }
 
-        .login-header {
+        .reset-header {
             margin-bottom: 30px;
         }
 
-        .login-header h3 {
+        .reset-header h3 {
             font-size: 28px;
             font-weight: 700;
             color: #2a2f4f;
@@ -104,7 +109,7 @@
             padding-bottom: 10px;
         }
 
-        .login-header h3::after {
+        .reset-header h3::after {
             content: '';
             position: absolute;
             bottom: 0;
@@ -144,34 +149,20 @@
             background: #fff;
         }
 
-        .remember-forgot {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
+        .form-group.error input {
+            border-color: #e74c3c;
+            background-color: #fff8f8;
         }
 
-        .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .invalid-feedback {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
         }
 
-        .remember-me input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-        }
-
-        .forgot-password {
-            color: #cd7f32;
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .forgot-password:hover {
-            color: #2a2f4f;
-            text-decoration: underline;
+        .form-group.error .invalid-feedback {
+            display: block;
         }
 
         .btn {
@@ -186,22 +177,22 @@
             margin-bottom: 15px;
         }
 
-        .btn-login {
+        .btn-primary {
             background: #cd7f32;
             color: white;
         }
 
-        .btn-login:hover {
+        .btn-primary:hover {
             background: #2a2f4f;
             box-shadow: 0 5px 15px rgba(205, 127, 50, 0.3);
         }
 
-        .btn-register {
+        .btn-secondary {
             background: #f0f0f0;
             color: #555;
         }
 
-        .btn-register:hover {
+        .btn-secondary:hover {
             background: #e0e0e0;
             color: #2a2f4f;
         }
@@ -211,6 +202,13 @@
             border-radius: 10px;
             margin-bottom: 20px;
             font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .alert i {
+            margin-right: 10px;
+            font-size: 18px;
         }
 
         .alert-danger {
@@ -219,10 +217,10 @@
             border: 1px solid #ffcccc;
         }
 
-        .alert-info {
-            background: #e5f6fd;
-            color: #3498db;
-            border: 1px solid #bde9ff;
+        .alert-success {
+            background: #e8f8f5;
+            color: #27ae60;
+            border: 1px solid #d1f2ea;
         }
 
         @media (max-width: 768px) {
@@ -230,7 +228,8 @@
                 flex-direction: column;
             }
 
-            .left-section, .right-section {
+            .left-section,
+            .right-section {
                 width: 100%;
             }
 
@@ -246,86 +245,85 @@
 </head>
 <body>
     <div class="container">
-        <!-- Section Gauche - Image et texte de bienvenue -->
+        <!-- Section Gauche -->
         <div class="left-section">
-            <div class="welcome-text">
-                <h2>Bienvenue sur ArtXcape</h2>
-                <p>Connectez-vous pour accéder à votre espace personnel et découvrir notre univers artistique unique.</p>
+            <div class="icon-container">
+                <i class="fas fa-key"></i>
             </div>
+            <h2>Réinitialisation du mot de passe</h2>
+            <p>Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe en toute sécurité.</p>
         </div>
 
-        <!-- Section Droite - Formulaire de connexion -->
+        <!-- Section Droite -->
         <div class="right-section">
-            <div class="login-header">
-                <h3>Connexion</h3>
+            <div class="reset-header">
+                <h3>Réinitialiser le mot de passe</h3>
             </div>
 
-            {% if error %}
+            {% for message in app.flashes('error') %}
                 <div class="alert alert-danger">
-                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                    <i class="fas fa-exclamation-circle"></i>
+                    {{ message }}
                 </div>
-            {% endif %}
+            {% endfor %}
 
-            {% if app.user %}
-                <div class="alert alert-info">
-                    Vous êtes connecté en tant que <strong>{{ app.user.userIdentifier }}</strong>,
-                    <a href="{{ path('app_logout') }}">Se déconnecter</a>
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    {{ message }}
                 </div>
-            {% endif %}
+            {% endfor %}
 
-            <form method="post" action="{{ path('app_login') }}">
+            <form method="post" id="resetForm">
                 <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="_username" value="{{ last_username }}" 
-                           class="form-control" required autocomplete="email" 
-                           placeholder="Votre adresse email">
+                    <label for="email">Adresse e-mail</label>
+                    <input type="email" 
+                           id="email"
+                           name="email" 
+                           class="form-control" 
+                           required 
+                           value="{{ app.request.query.get('email') }}"
+                           placeholder="Entrez votre adresse e-mail"
+                           pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                    <div class="invalid-feedback">
+                        Veuillez entrer une adresse email valide
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="password">Mot de passe</label>
-                    <input type="password" id="password" name="_password" 
-                           class="form-control" required autocomplete="current-password"
-                           placeholder="Votre mot de passe">
-                </div>
-
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-                <div class="remember-forgot">
-                    <label class="remember-me">
-                        <input type="checkbox" name="_remember_me">
-                        <span>Se souvenir de moi</span>
-                    </label>
-                    <a href="{{ path('app_forgot_password_request') }}" class="forgot-password">
-                        Mot de passe oublié ?
-                    </a>
-                </div>
-
-                <button type="submit" class="btn btn-login">
-                    <i class="fas fa-sign-in-alt"></i> Se connecter
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Envoyer le lien de réinitialisation
                 </button>
 
-                <a href="{{ path('app_register') }}" class="btn btn-register">
-                    <i class="fas fa-user-plus"></i> Créer un compte
+                <a href="{{ path('app_login') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour à la connexion
                 </a>
             </form>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animation des champs de formulaire
-            const inputs = document.querySelectorAll('.form-control');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.classList.add('focused');
-                });
-                input.addEventListener('blur', function() {
-                    if (!this.value) {
-                        this.parentElement.classList.remove('focused');
-                    }
-                });
-            });
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('resetForm');
+        const emailInput = form.querySelector('input[name="email"]');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const emailGroup = emailInput.closest('.form-group');
+            
+            if (!emailInput.value || !emailInput.checkValidity()) {
+                emailGroup.classList.add('error');
+                return;
+            }
+
+            emailGroup.classList.remove('error');
+            form.submit();
         });
+
+        emailInput.addEventListener('input', function() {
+            this.closest('.form-group').classList.remove('error');
+        });
+    });
     </script>
 </body>
 </html>

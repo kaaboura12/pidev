@@ -12,3 +12,8 @@ back_office_home:
     path: /back
     controller: App\Controller\DashboardController::backOffice
 
+app_forgot_password_request:
+    path: /reset-password
+    controller: App\Controller\ResetPasswordController::request
+    methods: [GET, POST]
+

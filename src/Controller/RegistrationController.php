@@ -16,6 +16,10 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Session\Session;
+
 
 class RegistrationController extends AbstractController
 {
@@ -31,49 +35,45 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Hachage du mot de passe
-            $user->setPassword($userPasswordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
+            // Récupérer l'URL de l'avatar depuis la session
+            $avatarUrl = $request->getSession()->get('avatar_url');
+            if ($avatarUrl) {
+                $user->setAvatarUrl($avatarUrl);
+                // Nettoyer la session
+                $request->getSession()->remove('avatar_url');
+                $request->getSession()->remove('avatar_success');
+            }
 
-            // Récupération et assignation des rôles
+            // Encoder le mot de passe
+            $user->setPassword(
+                $userPasswordHasher->hashPassword(
+                    $user,
+                    $form->get('plainPassword')->getData()
+                )
+            );
+
+            // Définir les rôles
             $roles = $form->get('roles')->getData();
             $user->setRoles($roles);
 
-            // Traitement de l'upload de la photo de profil
-            $photo = $form->get('photo')->getData();
-            if ($photo) {
-                $newFilename = uniqid() . '.' . $photo->guessExtension();
-                $photo->move($this->getParameter('images_directory'), $newFilename);
-                $user->setPhotoDeProfile($newFilename);
-            }
-
-            // Sauvegarde de l'utilisateur en base de données
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Générer une URL de confirmation par email
-            $this->emailVerifier->sendEmailConfirmation(
-                'app_verify_email', 
-                $user,
-                (new TemplatedEmail())
-                    ->from(new Address('karkoubsouhaila16@gmail.com', 'Souhaila'))
-                    ->to((string) $user->getEmail())
-                    ->subject('Please Confirm your Email')
-                    ->htmlTemplate('registration/confirmation_email.html.twig')
-            );
-
-            // Connexion automatique après l'inscription
+            // Connecter automatiquement l'utilisateur
             $security->login($user, 'form_login', 'main');
 
-            // 🚀 Vérification des rôles après inscription
+            // Redirection en fonction du rôle
             if (in_array('ROLE_ADMIN', $roles, true)) {
-                return $this->redirectToRoute('choose_dashboard'); // Page de choix si admin
+                return $this->redirectToRoute('choose_dashboard');
             } else {
-                return $this->redirectToRoute('front_office_home'); // Front-Office si user normal
+                return $this->redirectToRoute('front_office_home');
             }
         }
 
         return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form,
+            'registrationForm' => $form->createView(),
+            'avatar_success' => $request->getSession()->get('avatar_success', false),
+            'avatar_url' => $request->getSession()->get('avatar_url')
         ]);
     }
 
@@ -83,7 +83,6 @@ class RegistrationController extends AbstractController
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         try {
-            /** @var User $user */
             $user = $this->getUser();
             $this->emailVerifier->handleEmailConfirmation($request, $user);
         } catch (VerifyEmailExceptionInterface $exception) {
@@ -95,4 +94,27 @@ class RegistrationController extends AbstractController
 
         return $this->redirectToRoute('app_register');
     }
+
+    #[Route('/user/update-avatar3d', name: 'user_update_avatar3d', methods: ['POST'])]
+    public function updateAvatar3D(Request $request, Session $session): JsonResponse
+    {
+        $avatarUrl = $request->request->get('avatar_url');
+
+        if (!$avatarUrl) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'URL de l\'avatar manquante'
+            ], 400);
+        }
+
+        $session->set('avatar_url', $avatarUrl);
+        $session->set('avatar_success', true);
+
+        return new JsonResponse([
+            'success' => true,
+            'avatar_url' => $avatarUrl
+        ]);
+    }
+
+
 }

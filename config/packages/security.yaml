@@ -38,7 +38,7 @@ security:
         - { path: ^/home, roles: PUBLIC_ACCESS }  # Permet à tout le monde d'accéder à /home
         - { path: ^/admin, roles: ROLE_ADMIN }  # Restriction aux admins pour /admin
         - { path: ^/profile, roles: ROLE_USER }  # Accessible aux utilisateurs connectés
-        - { path: ^/back, roles: ROLE_USER }  # Restreint l'accès aux pages utilisateur
+        - { path: ^/back, roles: ROLE_ADMIN }  # Restreint l'accès aux pages utilisateur
 
 when@test:
     security:
