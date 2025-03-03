@@ -8,9 +8,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <!-- Favicons - Place favicon.ico in the root directory -->
-        <link rel="icon" type="image/png" sizes="32x32" href="assets/frontOffice/newimg/logoicon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/frontOffice/newimg/logoicon.png">
         <meta name="msapplication-TileColor" content="#ffffff">
-        <meta name="msapplication-TileImage" content="assets/frontOffice/img/favicons/ms-icon-144x144.html">
+        <meta name="msapplication-TileImage" content="/assets/frontOffice/img/favicons/ms-icon-144x144.html">
         <meta name="theme-color" content="#ffffff">
 
         <!--==============================
@@ -24,31 +24,29 @@
             All CSS File
         ============================== -->
         <!-- Bootstrap -->
-        <link rel="stylesheet" href="assets/frontOffice/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/frontOffice/css/bootstrap.min.css">
         <!-- Fontawesome Icon -->
-        <link rel="stylesheet" href="assets/frontOffice/css/all.min.css">
+        <link rel="stylesheet" href="/assets/frontOffice/css/all.min.css">
         <!-- Magnific Popup -->
-        <link rel="stylesheet" href="assets/frontOffice/css/magnific-popup.min.css">
+        <link rel="stylesheet" href="/assets/frontOffice/css/magnific-popup.min.css">
         <!-- Slick Slider -->
-        <link rel="stylesheet" href="assets/frontOffice/css/slick.min.css">
+        <link rel="stylesheet" href="/assets/frontOffice/css/slick.min.css">
         <!-- Odometer -->
-        <link rel="stylesheet" href="assets/frontOffice/css/odometer.css">
+        <link rel="stylesheet" href="/assets/frontOffice/css/odometer.css">
         <!-- Theme Custom CSS -->
-        <link rel="stylesheet" href="assets/frontOffice/css/style.css">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <link rel="stylesheet" href="/assets/frontOffice/css/style.css">
         {% endblock %}
     </head>
     <body>
                         <!--********************************Code Start From Here ******************************** -->
-                <!-- Cursor -->
+                <!-- Cursor 
                 <div class="cursor"></div>
                 <div class="cursor-follower"></div>
-                <!-- Cursor End -->
+                Cursor End -->
                 <!--==============================Preloader==============================-->
                 <div class="preloader ">
                     <div class="preloader-inner">
-                        <img src="assets/frontOffice/newimg/logo-white.png" alt="artxcape">
+                        <img src="/assets/frontOffice/newimg/logo-white.png" alt="artxcape">
                         <span class="loader"></span>
                     </div>
                 </div>
@@ -78,7 +76,7 @@
                             <div class="row align-items-center justify-content-between">
                                 <div class="col-auto">
                                     <div class="header-logo">
-                                        <a href="index.html"><img src="assets/frontOffice/newimg/logo-black1.png" alt="logo"></a>
+                                        <a href="index.html"><img src="/assets/frontOffice/newimg/logo-black1.png" alt="logo"></a>
                                     </div>
                                 </div>
                                 <div class="col-auto">
@@ -91,27 +89,39 @@
                                                 <a href="#">Galerie</a>
                                                 <ul class="sub-menu">
                                                     <li><a href="/gallerie">Explorer</a></li>
-                                                    <li><a href="/Mygallerie">Ma Galerie</a></li>
+                                                    {% if app.user %}
+                                                        <li><a href="{{ path('ma_galerie', { 'id': app.user.id }) }}">Ma Galerie</a></li>
+                                                    {% else %}
+                                                        <li><a href="{{ path('app_login') }}">Ma Galerie</a></li>
+                                                    {% endif %}
                                                 </ul>
                                             </li>
                                             <li class="menu-item-has-children">
-                                                <a href="#">Formations</a>
+                                                <a href="/formation">Formations</a>
                                             </li>
                                             <li class="menu-item-has-children">
-                                                <a href="event-4.html">Events</a>
+                                                <a href="/events">Events</a>
                                             </li>
                                             <li class="menu-item-has-children">
-                                                <a href="#">Jobs</a>
+                                                <a href="/emploi">Emploi</a>
                                                 <ul class="sub-menu">
-                                                    <li><a href="blog.html">Consulter</a></li>
-                                                    <li><a href="blog-details.html">Poster</a></li>
+                                                    <li><a href="{{ path('app_emploi') }}">Postuler</a></li>
+                                                    <li><a href="{{ path('emploi_add') }}">Poster</a></li>
+                                                    <li><a href="{{ path('mes_candidatures') }}">Mes candidatures</a></li>
+                                                    <li><a href="{{ path('mes_emplois') }}">Mes emplois</a></li>
                                                 </ul>
                                             </li>
-                                            <li>
-                                                <a href="contact.html">Contact</a>
-                                            </li>
+                                            
+                                            {% if app.user %}
+                                                        <li><a href="/forum">Forum</a></li>
+                                            {% else %}
+                                                        <li><a href="{{ path('app_login') }}">Forum</a></li>
+                                            {% endif %}
+                                                
+                                            
                                         </ul>
                                     </nav>
+                                    
                                     <div class="navbar-right d-inline-flex d-lg-none">
                                         <button type="button" class="menu-toggle icon-btn"><i class="fas fa-bars"></i></button>
                                     </div>
@@ -124,6 +134,15 @@
                                         </span>
                                         <a href="{{ path('app_logout') }}" class="btn btn-danger d-none d-xl-block">
                                             Déconnexion
+                                        </a>
+                                        <a href="{{ path('notifications_list') }}" class="nav-link">
+                                            <i class="fas fa-bell"></i>
+                                            {% if app.user %}
+                                                {% set unreadCount = render(controller('App\\Controller\\NotificationController::unreadCount')) %}
+                                                {% if unreadCount > 0 %}
+                                                    <span class="badge bg-danger">{{ unreadCount }}</span>
+                                                {% endif %}
+                                            {% endif %}
                                         </a>
                                     {% else %}
                                         <a href="{{ path('app_login') }}" class="btn d-none d-xl-block">
@@ -148,14 +167,14 @@
         ==============================-->
         <footer class="footer-wrapper footer-layout1 overflow-hidden">    
             <div class="shape-mockup footer1-shape1 jump" data-top="20%" data-left="-2%">
-                <img src="assets/frontOffice/img/normal/footer-1-shape1.png" alt="img">
+                <img src="/assets/frontOffice/img/normal/footer-1-shape1.png" alt="img">
             </div>
             <div class="container">
                 <div class="footer-top">
                     <div class="row align-items-center justify-content-between">
                         <div class="col-sm-auto">
                             <div class="footer-logo mb-40 mb-sm-0">
-                                <a href="index.html"><img src="assets/frontOffice/newimg/logo-white.png" alt="logo"></a>
+                                <a href="index.html"><img src="/assets/frontOffice/newimg/logo-white.png" alt="logo"></a>
                             </div>
                         </div>
                         <div class="col-sm-auto">
@@ -273,39 +292,39 @@
         All Js File
         ============================== -->
         <!-- Jquery -->
-        <script src="assets/frontOffice/js/vendor/jquery-3.7.1.min.js"></script>
+        <script src="/assets/frontOffice/js/vendor/jquery-3.7.1.min.js"></script>
         <!-- Slick Slider -->
-        <script src="assets/frontOffice/js/slick.min.js"></script>
+        <script src="/assets/frontOffice/js/slick.min.js"></script>
         <!-- Bootstrap -->
-        <script src="assets/frontOffice/js/bootstrap.min.js"></script>
+        <script src="/assets/frontOffice/js/bootstrap.min.js"></script>
         <!-- Magnific Popup -->
-        <script src="assets/frontOffice/js/jquery.magnific-popup.min.js"></script>
+        <script src="/assets/frontOffice/js/jquery.magnific-popup.min.js"></script>
         <!-- Counter Up -->
-        <script src="assets/frontOffice/js/jquery.counterup.min.js"></script>
+        <script src="/assets/frontOffice/js/jquery.counterup.min.js"></script>
         <!-- Range Slider -->
-        <script src="assets/frontOffice/js/jquery-ui.min.js"></script>
+        <script src="/assets/frontOffice/js/jquery-ui.min.js"></script>
         
         <!-- Isotope Filter -->
-        <script src="assets/frontOffice/js/imagesloaded.pkgd.min.js"></script>
-        <script src="assets/frontOffice/js/isotope.pkgd.min.js"></script>
+        <script src="/assets/frontOffice/js/imagesloaded.pkgd.min.js"></script>
+        <script src="/assets/frontOffice/js/isotope.pkgd.min.js"></script>
         
         <!-- ScrollTrigger -->
-        <script src="assets/frontOffice/js/ScrollTrigger.min.js"></script>
+        <script src="/assets/frontOffice/js/ScrollTrigger.min.js"></script>
         <!-- ScrollSmoother -->
-        <script src="assets/frontOffice/js/ScrollSmoother.min.js"></script>
+        <script src="/assets/frontOffice/js/ScrollSmoother.min.js"></script>
         <!-- ScrollToPlugin -->
-        <script src="assets/frontOffice/js/ScrollToPlugin.min.js"></script>
+        <script src="/assets/frontOffice/js/ScrollToPlugin.min.js"></script>
         <!-- SplitText -->
-        <script src="assets/frontOffice/js/SplitText.min.js"></script>
+        <script src="/assets/frontOffice/js/SplitText.min.js"></script>
         <!-- Gsap -->
-        <script src="assets/frontOffice/js/gsap.min.js"></script>
+        <script src="/assets/frontOffice/js/gsap.min.js"></script>
 
         <!-- WOW JS -->
-        <script src="assets/frontOffice/js/waypoints.js"></script>
-        <script src="assets/frontOffice/js/wow.js"></script>
+        <script src="/assets/frontOffice/js/waypoints.js"></script>
+        <script src="/assets/frontOffice/js/wow.js"></script>
         
         <!-- Main Js File -->
-        <script src="assets/frontOffice/js/main.js"></script>
+        <script src="/assets/frontOffice/js/main.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         {% endblock %}
     </body>

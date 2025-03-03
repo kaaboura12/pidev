@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\DonationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DonationRepository::class)]
 #[ORM\Table(name: 'donation')]
@@ -16,21 +17,43 @@ class Donation
     private ?int $iddon = null;
 
     #[ORM\Column(name: 'donorname', length: 255)]
+    #[Assert\NotBlank(message: 'Please enter your name')]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'Your name must be at least {{ limit }} characters long',
+        maxMessage: 'Your name cannot be longer than {{ limit }} characters'
+    )]
     private ?string $donorname = null;
 
     #[ORM\Column(name: 'email', length: 255)]
+    #[Assert\NotBlank(message: 'Please enter your email')]
+    #[Assert\Email(message: 'Please enter a valid email address')]
     private ?string $email = null;
 
     #[ORM\Column(name: 'montant', type: Types::FLOAT)]
+    #[Assert\NotBlank(message: 'Please enter the donation amount')]
+    #[Assert\Type(type: 'float', message: 'The amount must be a valid number')]
+    #[Assert\Positive(message: 'The amount must be greater than 0')]
     private ?float $montant = null;
 
     #[ORM\Column(name: 'date', type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(name: 'payment_method', length: 255)]
+    #[Assert\NotBlank(message: 'Please select a payment method')]
+    #[Assert\Choice(
+        choices: ['credit_card', 'paypal', 'bank_transfer'],
+        message: 'Please select a valid payment method'
+    )]
     private ?string $payment_method = null;
 
     #[ORM\Column(name: 'num_tlf', length: 20, nullable: true)]
+    #[Assert\NotBlank(message: 'Please enter your phone number')]
+    #[Assert\Regex(
+        pattern: '/^[+]?[0-9]{8,15}$/',
+        message: 'Please enter a valid phone number'
+    )]
     private ?string $num_tlf = null;
 
     #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'donations')]

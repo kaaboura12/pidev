@@ -3,32 +3,54 @@
 namespace App\Entity;
 
 use App\Repository\CandidatureRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: CandidatureRepository::class)]
 class Candidature
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'integer')]
+    private $id;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(name: "candidat", referencedColumnName: "user_id")]
-    private ?User $candidat = null;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'candidatures')]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "user_id", nullable: false)]
+    #[Assert\NotNull(message: 'Vous devez être un utilisateur enregistré pour postuler.')]
+    private $candidat;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $competences = null;
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\NotBlank(message: 'Veuillez décrire vos compétences.')]
+    #[Assert\Length(
+        min: 5,
+        max: 1000,
+        minMessage: 'Les compétences doivent contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Les compétences ne peuvent pas dépasser {{ limit }} caractères.'
+    )]
+    private $competences;
 
-    #[ORM\Column(length: 20)]
-    private string $disponibilite = 'À convenir';
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\NotBlank(message: 'Veuillez rédiger une lettre de motivation.')]
+    #[Assert\Length(
+        min: 5,
+        max: 2000,
+        minMessage: 'La lettre de motivation doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'La lettre de motivation ne peut pas dépasser {{ limit }} caractères.'
+    )]
+    private $lettreMotivation;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
-    private ?string $tarif_horaire = null;
+    #[ORM\Column(type: 'datetime')]
+    private $dateCandidature;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date_creation = null;
+    #[ORM\OneToMany(targetEntity: CandidatureOffre::class, mappedBy: 'candidature', cascade: ['remove'])]
+    private $candidatureOffres;
+
+    public function __construct()
+    {
+        $this->candidatureOffres = new ArrayCollection();
+        $this->dateCandidature = new \DateTime(); 
+    }
 
     public function getId(): ?int
     {
@@ -40,7 +62,7 @@ class Candidature
         return $this->candidat;
     }
 
-    public function setCandidat(?User $candidat): static
+    public function setCandidat(?User $candidat): self
     {
         $this->candidat = $candidat;
         return $this;
@@ -51,45 +73,31 @@ class Candidature
         return $this->competences;
     }
 
-    public function setCompetences(?string $competences): static
+    public function setCompetences(?string $competences): self
     {
         $this->competences = $competences;
         return $this;
     }
 
-    public function getDisponibilite(): string
+    public function getLettreMotivation(): ?string
     {
-        return $this->disponibilite;
+        return $this->lettreMotivation;
     }
 
-    public function setDisponibilite(string $disponibilite): static
+    public function setLettreMotivation(?string $lettreMotivation): self
     {
-        if (!in_array($disponibilite, ['Immédiate', 'À convenir'])) {
-            throw new \InvalidArgumentException('Invalid disponibilite');
-        }
-        $this->disponibilite = $disponibilite;
+        $this->lettreMotivation = $lettreMotivation;
         return $this;
     }
 
-    public function getTarifHoraire(): ?string
+    public function getDateCandidature(): ?\DateTimeInterface
     {
-        return $this->tarif_horaire;
+        return $this->dateCandidature;
     }
 
-    public function setTarifHoraire(?string $tarif_horaire): static
+    public function setDateCandidature(\DateTimeInterface $dateCandidature): self
     {
-        $this->tarif_horaire = $tarif_horaire;
+        $this->dateCandidature = $dateCandidature;
         return $this;
     }
-
-    public function getDateCreation(): ?\DateTimeInterface
-    {
-        return $this->date_creation;
-    }
-
-    public function setDateCreation(\DateTimeInterface $date_creation): static
-    {
-        $this->date_creation = $date_creation;
-        return $this;
-    }
-} 
+}

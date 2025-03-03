@@ -142,6 +142,23 @@
                 padding: 1rem;
             }
         }
+
+        .is-invalid {
+            border-color: #dc3545 !important;
+            background-color: #2A3038 !important;
+        }
+
+        .is-valid {
+            border-color: #198754 !important;
+            background-color: #2A3038 !important;
+        }
+
+        .invalid-feedback {
+            display: block;
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
     </style>
 {% endblock %}
 
@@ -163,7 +180,7 @@
                     </button>
                 </div>
                 <div class="card-body">
-                    {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
                         
                         {# Informations générales #}
                         <div class="form-section">
@@ -173,19 +190,37 @@
                             
                             <div class="form-group">
                                 {{ form_label(form.titre, 'Titre de l\'événement', {'label_attr': {'class': 'form-label'}}) }}
-                                {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_widget(form.titre, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'minlength': 3,
+                                        'maxlength': 255,
+                                        'required': true
+                                    }
+                                }) }}
                                 {{ form_errors(form.titre) }}
                             </div>
 
                             <div class="form-group">
                                 {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
-                                {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_widget(form.description, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'minlength': 10,
+                                        'required': true
+                                    }
+                                }) }}
                                 {{ form_errors(form.description) }}
                             </div>
 
                             <div class="form-group">
                                 {{ form_label(form.eventMission, 'Mission de l\'événement', {'label_attr': {'class': 'form-label'}}) }}
-                                {{ form_widget(form.eventMission, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_widget(form.eventMission, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'minlength': 10
+                                    }
+                                }) }}
                                 {{ form_errors(form.eventMission) }}
                             </div>
                         </div>
@@ -200,14 +235,25 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         {{ form_label(form.dateEvenement, 'Date', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.dateEvenement, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_widget(form.dateEvenement, {
+                                            'attr': {
+                                                'class': 'form-control',
+                                                'required': true,
+                                                'min': "now"|date('Y-m-d')
+                                            }
+                                        }) }}
                                         {{ form_errors(form.dateEvenement) }}
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         {{ form_label(form.timestart, 'Heure de début', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.timestart, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_widget(form.timestart, {
+                                            'attr': {
+                                                'class': 'form-control',
+                                                'required': true
+                                            }
+                                        }) }}
                                         {{ form_errors(form.timestart) }}
                                     </div>
                                 </div>
@@ -215,7 +261,14 @@
 
                             <div class="form-group">
                                 {{ form_label(form.lieu, 'Lieu', {'label_attr': {'class': 'form-label'}}) }}
-                                {{ form_widget(form.lieu, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_widget(form.lieu, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'required': true,
+                                        'minlength': 3,
+                                        'maxlength': 255
+                                    }
+                                }) }}
                                 {{ form_errors(form.lieu) }}
                             </div>
                         </div>
@@ -230,21 +283,46 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         {{ form_label(form.nombreBillets, 'Nombre de billets', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.nombreBillets, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_widget(form.nombreBillets, {
+                                            'attr': {
+                                                'class': 'form-control',
+                                                'required': true,
+                                                'min': 1,
+                                                'max': 9999,
+                                                'type': 'number'
+                                            }
+                                        }) }}
                                         {{ form_errors(form.nombreBillets) }}
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         {{ form_label(form.seatprice, 'Prix du billet', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.seatprice, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_widget(form.seatprice, {
+                                            'attr': {
+                                                'class': 'form-control',
+                                                'required': true,
+                                                'min': 0.01,
+                                                'max': 9999.99,
+                                                'step': '0.01',
+                                                'type': 'number'
+                                            }
+                                        }) }}
                                         {{ form_errors(form.seatprice) }}
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         {{ form_label(form.donation_objective, 'Objectif de don', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.donation_objective, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_widget(form.donation_objective, {
+                                            'attr': {
+                                                'class': 'form-control',
+                                                'min': 0,
+                                                'max': 999999.99,
+                                                'step': '0.01',
+                                                'type': 'number'
+                                            }
+                                        }) }}
                                         {{ form_errors(form.donation_objective) }}
                                     </div>
                                 </div>
@@ -259,7 +337,7 @@
                             
                             <div class="form-group">
                                 {{ form_label(form.image, 'Image', {'label_attr': {'class': 'form-label'}}) }}
-                                {{ form_widget(form.image, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_widget(form.image, {'attr': {'class': 'form-control', 'novalidate': 'novalidate'}}) }}
                                 {{ form_errors(form.image) }}
                                 {% if event.image is defined and event.image %}
                                     <div class="image-preview mt-3">
@@ -416,6 +494,145 @@
                     statusDiv.textContent = error.message || 'An error occurred while generating event details';
                 } finally {
                     generateButton.disabled = false;
+                }
+            });
+
+            // Real-time form validation
+            const form = document.querySelector('form[name="eventaddmodify"]');
+            if (!form) return;
+
+            function validateForm() {
+                let isValid = true;
+                const fields = {
+                    titre: {
+                        required: true,
+                        minLength: 3,
+                        maxLength: 255
+                    },
+                    description: {
+                        required: true,
+                        minLength: 10
+                    },
+                    eventMission: {
+                        minLength: 10
+                    },
+                    dateEvenement: {
+                        required: true
+                    },
+                    timestart: {
+                        required: true
+                    },
+                    lieu: {
+                        required: true,
+                        minLength: 3,
+                        maxLength: 255
+                    },
+                    nombreBillets: {
+                        required: true,
+                        min: 1,
+                        max: 9999
+                    },
+                    seatprice: {
+                        required: true,
+                        min: 0.01,
+                        max: 9999.99
+                    },
+                    donation_objective: {
+                        min: 0,
+                        max: 999999.99
+                    }
+                };
+
+                // Clear all previous errors
+                document.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+                document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                document.querySelectorAll('.is-valid').forEach(el => el.classList.remove('is-valid'));
+
+                // Validate each field
+                Object.entries(fields).forEach(([fieldName, rules]) => {
+                    const input = form.querySelector(`[name="eventaddmodify[${fieldName}]"]`);
+                    if (!input) return;
+
+                    let fieldIsValid = true;
+                    let errorMessage = '';
+
+                    // Required validation
+                    if (rules.required && !input.value.trim()) {
+                        fieldIsValid = false;
+                        errorMessage = 'Ce champ est obligatoire';
+                    }
+
+                    // MinLength validation
+                    if (fieldIsValid && rules.minLength && input.value.trim().length < rules.minLength) {
+                        fieldIsValid = false;
+                        errorMessage = `Ce champ doit contenir au moins ${rules.minLength} caractères`;
+                    }
+
+                    // MaxLength validation
+                    if (fieldIsValid && rules.maxLength && input.value.trim().length > rules.maxLength) {
+                        fieldIsValid = false;
+                        errorMessage = `Ce champ ne peut pas dépasser ${rules.maxLength} caractères`;
+                    }
+
+                    // Number validation
+                    if (fieldIsValid && (rules.min !== undefined || rules.max !== undefined)) {
+                        const value = parseFloat(input.value);
+                        if (rules.min !== undefined && value < rules.min) {
+                            fieldIsValid = false;
+                            errorMessage = `La valeur minimale est ${rules.min}`;
+                        }
+                        if (rules.max !== undefined && value > rules.max) {
+                            fieldIsValid = false;
+                            errorMessage = `La valeur maximale est ${rules.max}`;
+                        }
+                    }
+
+                    // Date validation
+                    if (fieldName === 'dateEvenement' && input.value) {
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const inputDate = new Date(input.value);
+                        if (inputDate < today) {
+                            fieldIsValid = false;
+                            errorMessage = 'La date doit être ultérieure à aujourd\'hui';
+                        }
+                    }
+
+                    // Update validation state
+                    if (!fieldIsValid) {
+                        isValid = false;
+                        input.classList.add('is-invalid');
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'invalid-feedback';
+                        errorDiv.textContent = errorMessage;
+                        input.parentElement.appendChild(errorDiv);
+                    } else {
+                        input.classList.add('is-valid');
+                    }
+                });
+
+                return isValid;
+            }
+
+            // Form submission handler
+            form.addEventListener('submit', function(e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Scroll to first error
+                    const firstError = form.querySelector('.is-invalid');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            });
+
+            // Real-time validation
+            form.querySelectorAll('input, textarea').forEach(input => {
+                if (input.type !== 'file') {
+                    input.addEventListener('input', () => validateForm());
+                    input.addEventListener('blur', () => validateForm());
                 }
             });
         });

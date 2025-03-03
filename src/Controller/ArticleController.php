@@ -22,8 +22,7 @@ final class ArticleController extends AbstractController
             'controller_name' => 'ArticleController',
         ]);
     }
-
-
+    //**********************************************backOffice**************************************************
     //Affichage
     #[Route('/backShowarticles', name: 'back_showarticle')]
     public function ShowArticles(ArticleRepository $ar): Response
@@ -35,7 +34,7 @@ final class ArticleController extends AbstractController
     }
     //DELETE 
     #[Route('/backDelarticle{id}',name:'delete_article')]
-    public function DeleteGallerie($id,ArticleRepository $ar,EntityManagerInterface $em)
+    public function DeleteArticle($id,ArticleRepository $ar,EntityManagerInterface $em)
     {
         $article=$ar->find($id);
         $em->remove($article);

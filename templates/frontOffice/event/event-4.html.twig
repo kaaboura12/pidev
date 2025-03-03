@@ -10,15 +10,7 @@
     <div class="cursor-follower"></div>
     <!-- Cursor End -->
 
-    <!--==============================
-     Preloader
-    ==============================-->
-    <div class="preloader ">
-        <div class="preloader-inner">
-            <img src="assets/img/logo-white.svg" alt="Artvista">
-            <span class="loader"></span>
-        </div>
-    </div>
+
 
     <!-- Chat Widget -->
     <div class="chat-widget">
@@ -69,43 +61,64 @@
                         <h5 class="modal-title" id="donationModalLabel{{ event.idevent }}">Make a Donation for {{ event.titre }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="{{ path('donation_payment', {'idevent': event.idevent}) }}" method="POST">
+                    <form action="{{ path('donation_payment', {'idevent': event.idevent}) }}" method="POST" class="donation-form" novalidate>
                         <div class="modal-body">
                             {% if app.user %}
                                 <input type="hidden" name="user_id" value="{{ app.user.id }}">
                             {% endif %}
                             
                             <div class="mb-3">
-                                <label for="donorname" class="form-label">Your Name</label>
-                                <input type="text" class="form-control" id="donorname" name="donorname" 
-                                       value="{{ app.user ? app.user.nom : '' }}" required>
+                                <label for="donorname{{ event.idevent }}" class="form-label">Your Name</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="donorname{{ event.idevent }}" 
+                                       name="donorname" 
+                                       value="{{ app.user ? app.user.nom : '' }}">
+                                <div class="invalid-feedback"></div>
                             </div>
                             
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" 
-                                       value="{{ app.user ? app.user.email : '' }}" required>
+                                <label for="email{{ event.idevent }}" class="form-label">Email</label>
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="email{{ event.idevent }}" 
+                                       name="email" 
+                                       value="{{ app.user ? app.user.email : '' }}">
+                                <div class="invalid-feedback"></div>
                             </div>
                             
                             <div class="mb-3">
-                                <label for="montant" class="form-label">Donation Amount ($)</label>
-                                <input type="number" class="form-control" id="montant" name="montant" 
-                                       min="1" step="0.01" required>
+                                <label for="montant{{ event.idevent }}" class="form-label">Donation Amount ($)</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="montant{{ event.idevent }}" 
+                                       name="montant">
+                                <div class="invalid-feedback"></div>
                             </div>
                             
                             <div class="mb-3">
-                                <label for="num_tlf" class="form-label">Phone Number</label>
-                                <input type="tel" class="form-control" id="num_tlf" name="num_tlf" required>
+                                <label for="num_tlf{{ event.idevent }}" class="form-label">Phone Number</label>
+                                <input type="tel" 
+                                       class="form-control" 
+                                       id="num_tlf{{ event.idevent }}" 
+                                       name="num_tlf">
+                                <div class="invalid-feedback"></div>
                             </div>
                             
                             <div class="mb-3">
-                                <label for="payment_method" class="form-label">Payment Method</label>
-                                <select class="form-select" id="payment_method" name="payment_method" required>
+                                <label for="payment_method{{ event.idevent }}" class="form-label">Payment Method</label>
+                                <select class="form-select" 
+                                        id="payment_method{{ event.idevent }}" 
+                                        name="payment_method">
+                                    <option value="">Select a payment method</option>
                                     <option value="credit_card">Credit Card</option>
                                     <option value="paypal">PayPal</option>
                                     <option value="bank_transfer">Bank Transfer</option>
                                 </select>
+                                <div class="invalid-feedback"></div>
                             </div>
+
+                            <div class="error-container mt-3"></div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -126,16 +139,24 @@
                         <h5 class="modal-title" id="reservationModalLabel{{ event.idevent }}">Reserve Tickets for {{ event.titre }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="{{ path('add_reservation', {'idevent': event.idevent}) }}" method="POST">
+                    <form action="{{ path('add_reservation', {'idevent': event.idevent}) }}" method="POST" class="reservation-form">
                         <div class="modal-body">
                             {% if app.user %}
                                 <input type="hidden" name="user_id" value="{{ app.user.id }}">
                             {% endif %}
                             
                             <div class="mb-3">
-                                <label for="seats" class="form-label">Number of Seats</label>
-                                <input type="number" class="form-control" id="seats" name="seats" 
-                                       min="1" max="{{ event.nombreBillets }}" required>
+                                <label for="seats{{ event.idevent }}" class="form-label">Number of Seats</label>
+                                <input type="number" 
+                                       class="form-control {% if errors is defined and errors.seats is defined %}is-invalid{% endif %}" 
+                                       id="seats{{ event.idevent }}" 
+                                       name="seats" 
+                                       min="1" 
+                                       max="{{ event.nombreBillets }}" 
+                                       required
+                                       data-event-price="{{ event.seatprice }}"
+                                       data-max-seats="{{ event.nombreBillets }}">
+                                <div class="invalid-feedback"></div>
                                 <small class="text-muted">Available seats: {{ event.nombreBillets }}</small>
                             </div>
                             
@@ -146,7 +167,19 @@
                             
                             <div class="mb-3">
                                 <label class="form-label">Total Amount</label>
-                                <p class="form-control-static" id="totalAmount{{ event.idevent }}">$0.00</p>
+                                <input type="text" 
+                                       class="form-control-static" 
+                                       id="totalAmount{{ event.idevent }}" 
+                                       name="totalAmount" 
+                                       readonly>
+                            </div>
+
+                            <div class="error-container mt-3">
+                                {% if errors is defined and errors.global is defined %}
+                                    <div class="alert alert-danger">
+                                        {{ errors.global }}
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -1013,7 +1046,7 @@
 
             // Handle quick view links
             document.querySelectorAll('[data-bs-target="#quickViewModal"]').forEach(link => {
-                link.addEventListener('click', function(e) {
+                link.addEventListener('click', async function(e) {
                     e.preventDefault();
                     const url = this.getAttribute('href');
                     const modalElement = document.getElementById('quickViewModal');
@@ -1022,28 +1055,48 @@
                     // Show loading spinner
                     modalContent.innerHTML = `
                         <div class="text-center p-4">
-                            <div class="spinner-border" role="status">
+                            <div class="spinner-border text-primary" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
                         </div>
                     `;
                     
-                    // Load content
-                    fetch(url)
-                        .then(response => response.text())
-                        .then(html => {
-                            modalContent.innerHTML = html;
-                        })
-                        .catch(error => {
-                            modalContent.innerHTML = `
-                                <div class="modal-body">
-                                    <p class="text-center text-danger">Error loading event details. Please try again.</p>
+                    try {
+                        const response = await fetch(url);
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('text/html')) {
+                            throw new Error('Received invalid content type');
+                        }
+
+                        const html = await response.text();
+                        modalContent.innerHTML = html;
+                        
+                    } catch (error) {
+                        console.error('Error loading event details:', error);
+                        modalContent.innerHTML = `
+                            <div class="modal-header">
+                                <h5 class="modal-title">Error</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    Unable to load event details. Please try again later.
                                 </div>
-                            `;
-                            console.error('Error:', error);
-                        });
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        `;
+                    }
                     
                     // Show modal
+                    const quickViewModal = new bootstrap.Modal(modalElement);
                     quickViewModal.show();
                 });
             });
@@ -1404,6 +1457,206 @@
             } else {
                 qrContainer.style.display = 'none';
             }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const seatsInputs = document.querySelectorAll('[data-event-price]');
+            
+            seatsInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    validateAndUpdateForm(this);
+                });
+
+                input.addEventListener('change', function() {
+                    validateAndUpdateForm(this);
+                });
+            });
+
+            // Handle form submission
+            document.querySelectorAll('.reservation-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const seatsInput = this.querySelector('[name="seats"]');
+                    const errorContainer = this.querySelector('.error-container') || createErrorContainer(this);
+                    
+                    // Clear previous errors
+                    errorContainer.innerHTML = '';
+                    seatsInput.classList.remove('is-invalid');
+                    
+                    const errors = validateReservation(seatsInput);
+                    
+                    if (errors.length > 0) {
+                        e.preventDefault();
+                        errors.forEach(error => {
+                            const errorDiv = document.createElement('div');
+                            errorDiv.className = 'alert alert-danger mt-2';
+                            errorDiv.textContent = error;
+                            errorContainer.appendChild(errorDiv);
+                        });
+                        seatsInput.classList.add('is-invalid');
+                    }
+                });
+            });
+        });
+
+        function validateAndUpdateForm(input) {
+            const seats = parseInt(input.value) || 0;
+            const price = parseFloat(input.dataset.eventPrice);
+            const maxSeats = parseInt(input.dataset.maxSeats);
+            const form = input.closest('form');
+            const errorContainer = form.querySelector('.error-container') || createErrorContainer(form);
+            
+            // Clear previous errors
+            errorContainer.innerHTML = '';
+            input.classList.remove('is-invalid');
+            
+            // Validate input
+            const errors = validateReservation(input);
+            
+            if (errors.length > 0) {
+                errors.forEach(error => {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'alert alert-danger mt-2';
+                    errorDiv.textContent = error;
+                    errorContainer.appendChild(errorDiv);
+                });
+                input.classList.add('is-invalid');
+            }
+            
+            // Update total amount regardless of errors
+            const totalAmount = (seats * price).toFixed(2);
+            const totalAmountInput = form.querySelector('[name="totalAmount"]');
+            if (totalAmountInput) {
+                totalAmountInput.value = totalAmount;
+            }
+        }
+
+        function validateReservation(input) {
+            const seats = parseInt(input.value) || 0;
+            const maxSeats = parseInt(input.dataset.maxSeats);
+            const errors = [];
+            
+            if (seats <= 0) {
+                errors.push('Please enter a number greater than 0');
+            }
+            
+            if (seats > maxSeats) {
+                errors.push(`You cannot reserve more than ${maxSeats} seats`);
+                input.value = maxSeats; // Correct the value automatically
+            }
+            
+            if (!Number.isInteger(seats)) {
+                errors.push('Please enter a valid whole number');
+            }
+            
+            return errors;
+        }
+
+        function createErrorContainer(form) {
+            const modalBody = form.querySelector('.modal-body');
+            const errorContainer = document.createElement('div');
+            errorContainer.className = 'error-container mt-3';
+            modalBody.appendChild(errorContainer);
+            return errorContainer;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle donation form validation
+            document.querySelectorAll('.donation-form').forEach(form => {
+                const inputs = form.querySelectorAll('input, select');
+                
+                inputs.forEach(input => {
+                    input.addEventListener('input', function() {
+                        validateDonationField(this);
+                    });
+
+                    input.addEventListener('change', function() {
+                        validateDonationField(this);
+                    });
+                });
+
+                form.addEventListener('submit', function(e) {
+                    const errorContainer = this.querySelector('.error-container');
+                    errorContainer.innerHTML = '';
+                    
+                    let hasErrors = false;
+                    inputs.forEach(input => {
+                        if (!validateDonationField(input)) {
+                            hasErrors = true;
+                        }
+                    });
+
+                    if (hasErrors) {
+                        e.preventDefault();
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'alert alert-danger mt-2';
+                        errorDiv.textContent = 'Please correct the errors before proceeding.';
+                        errorContainer.appendChild(errorDiv);
+                    }
+                });
+            });
+        });
+
+        function validateDonationField(input) {
+            const value = input.value.trim();
+            let isValid = true;
+            let errorMessage = '';
+
+            // Remove previous error state
+            input.classList.remove('is-invalid');
+            const feedback = input.nextElementSibling;
+            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                feedback.textContent = '';
+            }
+
+            // Validate based on input type
+            switch(input.name) {
+                case 'donorname':
+                    if (value.length < 2) {
+                        errorMessage = 'Name must be at least 2 characters long';
+                        isValid = false;
+                    }
+                    break;
+
+                case 'email':
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(value)) {
+                        errorMessage = 'Please enter a valid email address';
+                        isValid = false;
+                    }
+                    break;
+
+                case 'montant':
+                    const amount = parseFloat(value);
+                    if (isNaN(amount) || amount <= 0) {
+                        errorMessage = 'Please enter a valid amount greater than 0';
+                        isValid = false;
+                    }
+                    break;
+
+                case 'num_tlf':
+                    const phoneRegex = /^[+]?[0-9]{8,15}$/;
+                    if (!phoneRegex.test(value)) {
+                        errorMessage = 'Please enter a valid phone number';
+                        isValid = false;
+                    }
+                    break;
+
+                case 'payment_method':
+                    if (!value) {
+                        errorMessage = 'Please select a payment method';
+                        isValid = false;
+                    }
+                    break;
+            }
+
+            if (!isValid) {
+                input.classList.add('is-invalid');
+                if (feedback) {
+                    feedback.textContent = errorMessage;
+                }
+            }
+
+            return isValid;
         }
     </script>
 {% endblock %}

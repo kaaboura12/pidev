@@ -16,6 +16,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
+use Symfony\Component\Form\FormError;
 
 class RegistrationController extends AbstractController
 {
@@ -24,56 +25,56 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/register', name: 'app_register')]
-public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
-{
-    $user = new User();
-    $form = $this->createForm(RegistrationFormType::class, $user);
-    $form->handleRequest($request);
+    public function register(Request $request, UserPasswordHasherInterface $passwordHasher, Security $security, EntityManagerInterface $entityManager): Response
+    {
+        $user = new User();
+        $form = $this->createForm(RegistrationFormType::class, $user);
+        $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        /** @var string $plainPassword */
-        $plainPassword = $form->get('plainPassword')->getData();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
+            if ($existingUser) {
+                $form->get('email')->addError(new FormError('Cet email est déjà utilisé.'));
+                return $this->render('registration/register.html.twig', [
+                    'registrationForm' => $form
+                ]);
+            } else {
+                $user->setPassword($passwordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
+                $roles = $form->get('roles')->getData();
+                $user->setRoles($roles);
 
-        // Encode le mot de passe
-        $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+                $photo = $form->get('photo')->getData();
+                if ($photo) {
+                    $newFilename = uniqid() . '.' . $photo->guessExtension();
+                    $photo->move($this->getParameter('images_directory'), $newFilename);
+                    $user->setPhotoDeProfile($newFilename);
+                }
 
-        // Traitement de l'upload de la photo de profil
-        $photo = $form->get('photo')->getData();
+                $entityManager->persist($user);
+                $entityManager->flush();
 
-        if ($photo) {
-            $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
-            // Utilisation d'un nom unique pour éviter les conflits
-            $newFilename = uniqid() . '.' . $photo->guessExtension();
+                $this->emailVerifier->sendEmailConfirmation(
+                    'app_verify_email',
+                    $user,
+                    (new TemplatedEmail())
+                        ->from(new Address('karkoubsouhaila16@gmail.com', 'Souhaila'))
+                        ->to((string) $user->getEmail())
+                        ->subject('Please Confirm your Email')
+                        ->htmlTemplate('registration/confirmation_email.html.twig')
+                );
 
-            // Déplacez le fichier dans le répertoire souhaité
-            $photo->move(
-                $this->getParameter('images_directory'), // Assurez-vous d'avoir défini cette paramètre
-                $newFilename
-            );
+                $security->login($user, 'form_login', 'main');
 
-            // Enregistrez le chemin du fichier dans l'entité
-            $user->setPhotoDeProfile($newFilename);
+                if (in_array('ROLE_ADMIN', $roles, true)) {
+                    return $this->redirectToRoute('choose_dashboard');
+                } else {
+                    return $this->redirectToRoute('front_office_home');
+                }
+            }
         }
 
-        // Sauvegarde de l'utilisateur en base de données
-        $entityManager->persist($user);
-        $entityManager->flush();
-
-        // Générer une URL signée et l'envoyer à l'utilisateur
-        $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-            (new TemplatedEmail())
-                ->from(new Address('karkoubsouhaila16@gmail.com', 'Souhaila'))
-                ->to((string) $user->getEmail())
-                ->subject('Please Confirm your Email')
-                ->htmlTemplate('registration/confirmation_email.html.twig')
-        );
-
-        // Connexion automatique de l'utilisateur
-        return $security->login($user, 'form_login', 'main');
-    }
-
         return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form,
+            'registrationForm' => $form
         ]);
     }
 
@@ -82,18 +83,14 @@ public function register(Request $request, UserPasswordHasherInterface $userPass
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        // validate email confirmation link, sets User::isVerified=true and persists
         try {
-            /** @var User $user */
             $user = $this->getUser();
             $this->emailVerifier->handleEmailConfirmation($request, $user);
         } catch (VerifyEmailExceptionInterface $exception) {
             $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
-
             return $this->redirectToRoute('app_register');
         }
 
-        // @TODO Change the redirect on success and handle or remove the flash message in your templates
         $this->addFlash('success', 'Your email address has been verified.');
 
         return $this->redirectToRoute('app_register');

@@ -9,6 +9,9 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')] // Sécurisation du nom de table avec backticks
@@ -18,25 +21,50 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: "user_id", type: "integer")]
+    #[ORM\Column(name: 'user_id', type: 'integer')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom est obligatoire')]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères'
+    )]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le prénom est obligatoire')]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: 'Le prénom doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le prénom ne peut pas dépasser {{ limit }} caractères'
+    )]
     private ?string $prenom = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Assert\NotBlank(message: 'L\'email est obligatoire')]
+    #[Assert\Email(message: 'L\'email {{ value }} n\'est pas un email valide')]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
     #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Regex(
+        pattern: '/^[0-9]{8}$/',
+        message: 'Le numéro de téléphone doit contenir exactement 8 chiffres'
+    )]
     private ?string $numtlf = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Range(
+        min: 18,
+        max: 100,
+        notInRangeMessage: 'Vous devez avoir entre {{ min }} et {{ max }} ans'
+    )]
     private ?int $age = null;
 
     #[ORM\Column(type: "json")]
@@ -53,6 +81,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private bool $isVerified = false;
+
+    #[ORM\OneToMany(mappedBy: 'candidat', targetEntity: Candidature::class)]
+    private Collection $candidatures;
+
+    #[ORM\ManyToMany(targetEntity: Conversation::class, mappedBy: 'participants')]
+    private Collection $conversations;
+
+    public function __construct()
+    {
+        $this->candidatures = new ArrayCollection();
+        $this->conversations = new ArrayCollection();
+        $this->roles = ['ROLE_USER'];
+    }
 
     // =====================
     // GETTERS & SETTERS
@@ -132,9 +173,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        if (!in_array('ROLE_USER', $roles, true)) {
-            $roles[] = 'ROLE_USER';
-        }
+        // Ensure every user has at least ROLE_USER
+        $roles[] = 'ROLE_USER';
         return array_unique($roles);
     }
 
@@ -169,6 +209,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->photoFile;
     }
 
+    public function getCandidatures(): Collection
+    {
+        return $this->candidatures;
+    }
+
+    public function getConversations(): Collection
+    {
+        return $this->conversations;
+    }
+
+    public function addConversation(Conversation $conversation): self
+    {
+        if (!$this->conversations->contains($conversation)) {
+            $this->conversations[] = $conversation;
+        }
+        return $this;
+    }
+
+    public function removeConversation(Conversation $conversation): self
+    {
+        $this->conversations->removeElement($conversation);
+        return $this;
+    }
+
     // =====================
     // INTERFACE MÉTHODES
     // =====================
@@ -190,7 +254,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
-
         return $this;
     }
 }

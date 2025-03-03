@@ -7,237 +7,14 @@
 	******************************** -->
 
 
-    <!-- Cursor -->
-    <div class="cursor"></div>
-    <div class="cursor-follower"></div>
-    <!-- Cursor End -->
-
-    <!--==============================
-     Preloader
-    ==============================-->
-    <div class="preloader ">
-        <div class="preloader-inner">
-            <img src="assets/img/logo-white.svg" alt="Artvista">
-            <span class="loader"></span>
-        </div>
-    </div>
-
-    <!--==============================
-    Product Lightbox
-    ==============================-->
-    <div id="QuickView" class="white-popup mfp-hide">
-        <div class="container bg-white">
-            <div class="row gx-50">
-                <div class="col-lg-6">
-                    <div class="product-big-img">
-                        <div class="img"><img src="assets/img/product/product-details1.png" alt="Product Image"></div>
-                    </div>
-                </div>
-                <div class="col-lg-6 align-self-center">
-                    <div class="product-about">
-                        <p class="price">{{ formation.prix ?? '0.00' }} TND</p>
-                        <h2 class="product-title">{{ formation.titre ?? 'Formation Title' }}</h2>
-                        <p class="text">{{ formation.description ?? 'No description available' }}</p>
-                        <div class="checklist">
-                            <ul>
-                                <li><i class="far fa-check-circle"></i> Date début: 
-                                    {% if formation is defined and formation.dateDebut %}
-                                        {{ formation.dateDebut|date('d/m/Y') }}
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </li>
-                                <li><i class="far fa-check-circle"></i> Date fin: 
-                                    {% if formation is defined and formation.dateFin %}
-                                        {{ formation.dateFin|date('d/m/Y') }}
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </li>
-                                <li><i class="far fa-check-circle"></i> Places disponibles: {{ formation.nbrpart ?? '0' }}</li>
-                            </ul>
-                        </div>
-                        <div class="actions">
-                            <button class="btn">S'INSCRIRE <i class="fas fa-user-plus ms-2"></i></button>
-                        </div>
-                        <div class="product_meta">
-                            <span class="posted_in">Catégorie: <a href="#" rel="tag">{{ formation.categorie.nom ?? 'Non catégorisé' }}</a></span>
-                           
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <button title="Close (Esc)" type="button" class="mfp-close">×</button>
-        </div>
-    </div>
-
-    <div class="sidemenu-wrapper">
-        <div class="sidemenu-content">
-            <button class="closeButton sideMenuCls"><i class="fas fa-times"></i></button>
-            <div class="widget footer-widget">
-                <div class="widget widget-about footer-widget">
-                    <div class="footer-logo">
-                        <a href="index.html"><img src="assets/img/logo-white.svg" alt="logo"></a>
-                    </div>
-                    <p class="about-text mb-4 text-white">A small business can be better than a big business because of agility and adaptability due to their size and scale.</p>
-                    
-                    <p class="footer-text text-white">
-                        <a href="tel:851555961658"><i class="fas fa-phone-alt me-2"></i>+85 155 596 1658</a>
-                    </p>
-                    <p class="contact-text text-white"><i class="fa fa-map-marker-alt me-2"></i> Losangle, Street Road 24, NewYork, USA - 67452</p>
-                    <p class="footer-text text-white"><a href="mailto:support@gmail.com"><i class="fas fa-envelope me-2"></i>support@gmail.com</a></p>
-                    <div class="social-btn style2 mt-30">
-                        <a href="https://facebook.com/"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://www.twitter.com/"><i class="fab fa-twitter"></i></a>
-                        <a href="https://linkedin.com/"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="https://instagram.com/"><i class="fab fa-instagram"></i></a>                           
-                    </div>
-                    <div class="recent-post-wrap mt-40">
-                        <div class="recent-post">
-                            <div class="media-img">
-                                <a href="blog-details.html"><img src="assets/img/widget/widget1-1.png" alt="Blog Image"></a>
-                            </div>
-                            <div class="media-body">
-                                <div class="recent-post-meta">
-                                    <a href="blog.html"><i class="far fa-clock"></i> 15 Jan, 2024</a>
-                                </div>
-                                <h4 class="post-title"><a class="text-inherit" href="blog-details.html">Education is at the heart of everything we do, and</a></h4>                                
-                            </div>
-                        </div>
-                        <div class="recent-post">
-                            <div class="media-img">
-                                <a href="blog-details.html"><img src="assets/img/widget/widget1-2.png" alt="Blog Image"></a>
-                            </div>
-                            <div class="media-body">
-                                <div class="recent-post-meta">
-                                    <a href="blog.html"><i class="far fa-clock"></i> 05 Jul, 2024</a>
-                                </div>
-                                <h4 class="post-title"><a class="text-inherit" href="blog-details.html">Exploring A Journey Through Egyptian Artifacts</a></h4>                                
-                            </div>
-                        </div>
-                        <div class="recent-post">
-                            <div class="media-img">
-                                <a href="blog-details.html"><img src="assets/img/widget/widget1-3.png" alt="Blog Image"></a>
-                            </div>
-                            <div class="media-body">
-                                <div class="recent-post-meta">
-                                    <a href="blog.html"><i class="far fa-clock"></i> 14 Sep, 2024</a>
-                                </div>
-                                <h4 class="post-title"><a class="text-inherit" href="blog-details.html">Whether you're a seasoned or a curious </a></h4>                                
-                            </div>
-                        </div>
-                    </div>
-                    <form class="newsletter-form mt-40">
-                        <div class="form-group">
-                            <input class="form-control" type="email" placeholder="Email Address" required="">
-                        </div>
-                        <button type="submit" class="btn">SUBSCRIBE</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--==============================
-    PopUp Search
-    ============================== -->
-    <div class="popup-search-box">
-        <button class="searchClose"><i class="fas fa-times"></i></button>
-        <form action="#">
-            <input type="text" placeholder="Search Here..">
-            <button type="submit"><i class="fas fa-search"></i></button>
-        </form>
-    </div>
-    <!--==============================
-    Mobile Menu
-    ============================== -->
-    <div class="mobile-menu-wrapper">
-        <div class="mobile-menu-area text-center">
-            <button class="menu-toggle"><i class="fas fa-times"></i></button>
-            <div class="mobile-logo">
-                <a href="index.html"><img src="assets/img/logo-white.svg" alt="Artvista"></a>
-            </div>
-            <div class="mobile-menu">
-                <ul>
-                    <li class="menu-item-has-children">
-                        <a href="#">Home</a>
-                        <ul class="sub-menu">
-                            <li>
-                                <a href="index.html">Home 01</a>
-                            </li>
-                            <li>
-                                <a href="home-2.html">Home 02</a>
-                            </li>
-                            <li>
-                                <a href="home-3.html">Home 03</a>
-                            </li>
-                            <li>
-                                <a href="home-4.html">Home 04</a>
-                            </li>
-                            <li>
-                                <a href="home-5.html">Home 05</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="menu-item-has-children">
-                        <a href="#">Pages</a>
-                        <ul class="sub-menu">
-                            <li><a href="about.html">About Page</a></li>
-                            <li><a href="team.html">Team Page</a></li>
-                            <li><a href="team-details.html">Team Details</a></li>
-                            <li><a href="opening-hour.html">Opening Hour</a></li>
-                            <li><a href="location.html">Location Us</a></li>
-                            <li><a href="error.html">Error Page</a></li>
-                        </ul>
-                    </li>
-                    <li class="menu-item-has-children">
-                        <a href="#">Portfolio</a>
-                        <ul class="sub-menu">
-                            <li><a href="project.html">Portfolio Standard</a></li>
-                            <li><a href="project-2.html">Portfolio On Hover</a></li>
-                            <li><a href="project-3.html">Portfolio List</a></li>
-                            <li><a href="project-4.html">Portfolio Full Width</a></li>
-                            <li><a href="project-details.html">Portfolio Details</a></li>
-                        </ul>
-                    </li>
-                    <li class="menu-item-has-children">
-                        <a href="#">Events</a>
-                        <ul class="sub-menu">
-                            <li><a href="event.html">Event Page</a></li>
-                            <li><a href="event-2.html">Event Simple Page</a></li>
-                            <li><a href="event-3.html">Event Slider Page</a></li>
-                            <li><a href="event-4.html">Event list Page</a></li>
-                            <li><a href="event-details.html">Event Details</a></li>
-                        </ul>
-                    </li>
-                    <li class="menu-item-has-children">
-                        <a href="#">Blog</a>
-                        <ul class="sub-menu">
-                            <li><a href="blog.html">Blog Page</a></li>
-                            <li><a href="blog-details.html">Blog Details</a></li>
-                        </ul>
-                    </li>
-                    <li class="menu-item-has-children">
-                        <a href="#">Shop</a>
-                        <ul class="sub-menu">
-                            <li><a href="shop.html">Shop Grid</a></li>
-                            <li><a href="shop-2.html">Shop Grid with sidebar</a></li>
-                            <li><a href="shop-details.html">Shop Details</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="contact.html">Contact</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
+   
+    
     <div id="smooth-wrapper">
         <div id="smooth-content">
         <!--==============================
         Breadcumb
         ============================== -->
-        <div class="breadcumb-wrapper text-center" data-bg-src="assets/img/bg/breadcrumb-bg.png">
+        <div class="breadcumb-wrapper text-center" data-bg-src="/assets/frontOffice/img/bg/breadcrumb-bg.png">
             <div class="container">
                 <div class="breadcumb-content">
                     <h1 class="breadcumb-title">Nos Formations</h1>
@@ -284,7 +61,26 @@
                                 <div class="row gx-50">
                                     <div class="col-lg-6">
                                         <div class="product-big-img">
-                                            <div class="img"><img src="assets/img/product/product-details1.png" alt="Formation Image"></div>
+                                            {% if formation.video %}
+                                                {% set video_id = formation.video|replace({
+                                                    'https://www.youtube.com/watch?v=': '',
+                                                    'https://youtube.com/watch?v=': '',
+                                                    'https://youtu.be/': '',
+                                                    'http://www.youtube.com/watch?v=': '',
+                                                    'http://youtube.com/watch?v=': '',
+                                                    'http://youtu.be/': ''
+                                                })|split('&')|first %}
+                                                <div class="video-preview">
+                                                    <img src="https://img.youtube.com/vi/{{ video_id }}/hqdefault.jpg" alt="Aperçu de la formation" class="video-thumbnail img-fluid">
+                                                    <div class="video-overlay">
+                                                        <i class="fas fa-play-circle"></i>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <div class="img">
+                                                    <img src="assets/img/product/product-details1.png" alt="Formation Image">
+                                                </div>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="col-lg-6 align-self-center">
@@ -300,12 +96,66 @@
                                                 </ul>
                                             </div>
                                             <div class="actions">
-                                                <button class="btn">S'INSCRIRE <i class="fas fa-user-plus ms-2"></i></button>
+                                                {% if app.user %}
+                                                    {% set isInscrit = false %}
+                                                    {% for inscription in userInscriptions %}
+                                                        {% if inscription.formation.id == formation.id %}
+                                                            {% set isInscrit = true %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    
+                                                    {% if not isInscrit %}
+                                                        <form action="{{ path('formation_inscription', {'id': formation.id}) }}" method="GET" class="inscription-form">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token('inscription' ~ formation.id) }}">
+                                                            <input type="hidden" name="user_id" value="{{ app.user.id }}">
+                                                            <button type="submit" class="btn" {% if formation.nbrpart <= 0 %}disabled{% endif %}>
+                                                                {% if formation.nbrpart <= 0 %}
+                                                                    COMPLET
+                                                                {% else %}
+                                                                    S'INSCRIRE <i class="fas fa-user-plus ms-2"></i>
+                                                                {% endif %}
+                                                            </button>
+                                                        </form>
+                                                    {% else %}
+                                                        <div class="inscription-status">
+                                                            <span class="badge bg-success">
+                                                                <i class="fas fa-check-circle"></i> Vous êtes inscrit à cette formation
+                                                            </span>
+                                                        </div>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <a href="{{ path('app_login') }}" class="btn">
+                                                        CONNECTEZ-VOUS POUR VOUS INSCRIRE <i class="fas fa-sign-in-alt ms-2"></i>
+                                                    </a>
+                                                {% endif %}
                                             </div>
                                             <div class="product_meta">
                                                 <span class="posted_in">Catégorie: <a href="#" rel="tag">{{ formation.categorie.nom }}</a></span>
                                                 {% if formation.video %}
-                                                    <span class="video_link">Vidéo: <a href="{{ formation.video }}" target="_blank">Voir la présentation</a></span>
+                                                    {% if app.user %}
+                                                        {% set isInscrit = false %}
+                                                        {% for inscription in formation.inscriptions %}
+                                                            {% if inscription.user == app.user %}
+                                                                {% set isInscrit = true %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        
+                                                        {% if isInscrit %}
+                                                            <span class="video_link">
+                                                                <a href="{{ formation.video }}" target="_blank" class="btn btn-sm btn-success mt-2">
+                                                                    <i class="fas fa-play-circle"></i> Voir la vidéo du cours
+                                                                </a>
+                                                            </span>
+                                                        {% else %}
+                                                            <div class="alert alert-warning mt-2">
+                                                                <i class="fas fa-lock"></i> Inscrivez-vous à cette formation pour accéder à la vidéo du cours
+                                                            </div>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <div class="alert alert-info mt-2">
+                                                            <i class="fas fa-lock"></i> Connectez-vous et inscrivez-vous pour accéder à la vidéo du cours
+                                                        </div>
+                                                    {% endif %}
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -333,4 +183,260 @@
         </svg>
     </div>
 
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Card Styles */
+        .vs-blog {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .vs-blog:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .blog-content {
+            padding: 25px;
+        }
+
+        /* Meta Information */
+        .blog-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .blog-meta a {
+            color: #666;
+            font-size: 0.9em;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .blog-meta a i {
+            color: #DF6D14;
+        }
+
+        /* Title */
+        .blog-title {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 12px;
+            font-weight: 600;
+            line-height: 1.4;
+            min-height: 2.8em;
+        }
+
+        /* Description */
+        .blog-text {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            min-height: 4.8em;
+        }
+
+        /* Bottom Section */
+        .blog-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-top: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+
+        .price-tag {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #DF6D14;
+        }
+
+        .participants {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .participants i {
+            color: #DF6D14;
+        }
+
+        /* Link Button */
+        .link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #DF6D14;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .link-btn:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #DF6D14;
+            transition: width 0.3s ease;
+        }
+
+        .link-btn:hover {
+            color: #F17B25;
+        }
+
+        .link-btn:hover:after {
+            width: 100%;
+        }
+
+        .link-btn:hover i {
+            transform: translateX(5px);
+        }
+
+        .link-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        /* Modal Styles */
+        .white-popup {
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .product-big-img {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .video-preview {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .video-overlay {
+            background: rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .video-overlay:hover {
+            background: rgba(0,0,0,0.5);
+        }
+
+        .product-title {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .checklist ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+        }
+
+        .checklist li i {
+            color: #DF6D14;
+            font-size: 1.1em;
+        }
+
+        /* Section Header */
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .section-subtitle {
+            color: #666;
+            font-size: 1.1em;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .blog-content {
+                padding: 20px;
+            }
+
+            .blog-title {
+                font-size: 1.1em;
+            }
+
+            .price-tag {
+                font-size: 1.2em;
+            }
+        }
+
+        /* Button Styles */
+        .btn {
+            background: linear-gradient(45deg, #DF6D14, #F17B25);
+            border: none;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(223, 109, 20, 0.3);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Badge Styles */
+        .badge.bg-success {
+            background: linear-gradient(45deg, #DF6D14, #F17B25) !important;
+        }
+
+        /* Alert Styles */
+        .alert-warning {
+            background-color: rgba(223, 109, 20, 0.1);
+            border: 1px solid rgba(223, 109, 20, 0.2);
+            color: #DF6D14;
+        }
+
+        .alert-info {
+            background-color: rgba(223, 109, 20, 0.1);
+            border: 1px solid rgba(223, 109, 20, 0.2);
+            color: #DF6D14;
+        }
+    </style>
 {% endblock %}

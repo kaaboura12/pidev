@@ -3,3 +3,20 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+messages_index:
+    path: /messages
+    controller: App\Controller\MessageController::index
+
+messages_conversation:
+    path: /messages/conversation/{id}
+    controller: App\Controller\MessageController::conversation
+
+messages_send:
+    path: /messages/send/{id}
+    controller: App\Controller\MessageController::send
+    methods: [POST]
+
+messages_search_users:
+    path: /messages/search-users
+    controller: App\Controller\MessageController::searchUsers

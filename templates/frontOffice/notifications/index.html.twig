@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2>Mes notifications</h2>
+    
+    <div class="list-group">
+        {% for notification in notifications %}
+            <div class="list-group-item">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">
+                        Candidature {{ notification.statut }}
+                    </h5>
+                    <small>{{ notification.dateCandidature|date('d/m/Y H:i') }}</small>
+                </div>
+                <p class="mb-1">
+                    Votre candidature pour l'offre "{{ notification.emploi.titre }}" a été {{ notification.statut|lower }}.
+                </p>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                Aucune nouvelle notification.
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

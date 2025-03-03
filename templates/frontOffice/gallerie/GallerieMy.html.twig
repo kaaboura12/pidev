@@ -1,190 +1,243 @@
 {% extends 'base.html.twig' %}
-{% block body %}
-    <div id="smooth-wrapper">
-        <div id="smooth-content">
-        <!--==============================
-        Breadcumb
-        ============================== -->
-        <div class="breadcumb-wrapper text-center" data-bg-src="assets/frontOffice/img/bg/breadcrumb-bg.png">
-            <!-- bg animated image/ -->   
-            <div class="container">
-                <div class="breadcumb-content">
-                    <h1 class="breadcumb-title">Shop Details</h1>
-                </div>
-                <ul class="breadcumb-menu">
-                    <li><a href="index.html">MAIN HOME</a></li>
-                    <li class="active">SHOP DETAILS</li>
-                </ul>                
-            </div>
-        </div>
 
-        <!--==============================
-        Product Details
-        ==============================-->
-        <section class="product-details space">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-5">
-                        <div class="product-thumb">
-                            <div class="img"><img src="assets/frontOffice/img/product/product-details1.png" alt="Product Image"></div>
-                        </div>
-                    </div>
-                    <div class="col-xl-6 col-lg-7 align-self-center">
-                        <div class="product-about">
-                            <p class="price">$150.00 <del>$260.00</del></p>
-                            <h2 class="product-title">Premium Museum Masterpieces</h2> 
-                            <div class="product-rating">
-                                <div class="star-rating" role="img" aria-label="Rated 5.00 out of 5"><span style="width:100%">Rated <strong class="rating">5.00</strong> out of 5 based on <span class="rating">2</span> customer reviews</span></div>
-                                <a href="shop-details.html" class="woocommerce-review-link">(<span class="count">2</span> customer reviews)</a>
-                            </div>
-                            <p class="text">Syndicate customized growth strategies prospective human capital leverage other's optimal e-markets without transparent catalysts for change. Credibly coordinate highly efficient methods of empowerment cross unit solutions.</p>
-                            <div class="checklist">
-                                <ul>
-                                    <li><i class="far fa-check-circle"></i>Lifetime structural, one year face finish warranty
-                                    </li>
-                                    <li><i class="far fa-check-circle"></i>Mapped from “Center Caps” under ” tment” tab
-                                    </li>
-                                    <li><i class="far fa-check-circle"></i>Fully copatible with OEM equipment
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="actions">
-                                <div class="quantity">
-                                    <input type="number" class="qty-input" step="1" min="1" max="100" name="quantity" value="1" title="Qty">
-                                    <button class="quantity-plus qty-btn"><i class="fas fa-chevron-up"></i></button>
-                                    <button class="quantity-minus qty-btn"><i class="fas fa-chevron-down"></i></button>
-                                </div>
-                                <button class="btn">ADD TO CART <i class="fas fa-shopping-bag ms-2"></i></button>
-                            </div>
-                            <div class="product_meta">
-                                <span class="sku_wrapper">SKU: <span class="sku">Artist</span></span>
-                                <span class="posted_in">Category: <a href="shop.html" rel="tag">Art & Exhibition</a></span>
-                                <span>Tags: <a href="shop.html">Museum</a><a href="shop.html">Exhibition</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="product-tab-area">
-                    <ul class="nav product-tab-style1" id="productTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link active" id="description-tab" data-bs-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="false">Description</a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" id="info-tab" data-bs-toggle="tab" href="#add_info" role="tab" aria-controls="add_info" aria-selected="false">Additional Information</a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" id="reviews-tab" data-bs-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="true">Reviews (03)</a>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="productTabContent">
-                        <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
-                            <p>Credibly negotiate emerging materials whereas clicks-and-mortar intellectual capital. Compellingly whiteboard client-centric sources before cross-platform schemas. Distinctively develop future-proof outsourcing without multimedia based portals. Progressively coordinate next-generation architectures for collaborative solutions. Professionally restore backward-compatible quality vectors before customer directed metrics. Holisticly restore technically sound internal or "organic" sources before client-centered human capital underwhelm holistic mindshare for prospective innovation.</p>
-                            <p class="mb-n1">Seamlessly target fully tested infrastructures whereas just in time process improvements. Dynamically exploit team driven functionalities vis a vis global total linkage redibly synthesize just in time technology rather than open-source strategic theme areas.</p>
-                        </div>
-                        <div class="tab-pane fade" id="add_info" role="tabpanel" aria-labelledby="add_info">
-                            <table class="woocommerce-table">
-                                <tbody>
-                                    <tr>
-                                        <th>Brand</th>
-                                        <td>Jakuna</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Color</th>
-                                        <td>Yellow</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Weight</th>
-                                        <td>400 gm</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Battery</th>
-                                        <td>Lithium</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Material</th>
-                                        <td>Wood</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
-                            <div class="comments-wrap mt-0">
-                                <ul class="comment-list">
-                                    <li class="comment-item">
-                                        <div class="post-comment">
-                                            <div class="comment-avater">
-                                                <img src="assets/frontOffice/img/blog/blog_comment1.png" alt="Comment Author">
-                                            </div>
-                                            <div class="comment-content">
-                                                <span class="commented-on">15 JUN, 2023</span>
-                                                <h3 class="name">Daniel Adam</h3>
-                                                <p class="text">Collaboratively empower multifunctional e-commerce for prospective applications. Seamlessly productivate plug-and-play markets whereas synergistic scenarios.</p>
-                                                <div class="reply_and_edit">
-                                                    <a href="blog-details.html" class="reply-btn">Reply</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <ul class="children">
-                                            <li class="comment-item">
-                                                <div class="post-comment">
-                                                    <div class="comment-avater">
-                                                        <img src="assets/frontOffice/img/blog/blog_comment2.png" alt="Comment Author">
-                                                    </div>
-                                                    <div class="comment-content">
-                                                        <span class="commented-on">15 JUN, 2023</span>
-                                                        <h3 class="name">Zenelia Lozhe</h3>
-                                                        <p class="text">Collaboratively empower multifunctional e-commerce for prospective application mlessly productivate</p>
-                                                        <div class="reply_and_edit">
-                                                            <a href="blog-details.html" class="reply-btn">Reply</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li class="comment-item">
-                                        <div class="post-comment">
-                                            <div class="comment-avater">
-                                                <img src="assets/frontOffice/img/blog/blog_comment3.png" alt="Comment Author">
-                                            </div>
-                                            <div class="comment-content">
-                                                <span class="commented-on">15 JUN, 2023</span>
-                                                <h3 class="name">John Smith</h3>
-                                                <p class="text">Collaboratively empower multifunctional e-commerce for prospective applications. Seamlessly productivate plug-and-play markets whereas synergistic scenarios.</p>
-                                                <div class="reply_and_edit">
-                                                    <a href="blog-details.html" class="reply-btn">Reply</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div> <!-- Comment end -->
-                            <!-- Comment Form -->
-                            <div class="comment-form">
-                                <div class="form-title">
-                                    <h3 class="blog-inner-title"> Leave a Reply</h3>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6 form-group">
-                                        <input type="text" placeholder="Your Name" class="form-control style-white">
-                                        <i class="far fa-user"></i>
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <input type="text" placeholder="Email Address" class="form-control style-white">
-                                        <i class="far fa-envelope"></i>
-                                    </div>
-                                    <div class="col-12 form-group">
-                                        <textarea placeholder="Type Your Message" class="form-control style-white"></textarea>
-                                        <i class="fas fa-pencil-alt"></i>
-                                    </div>                          
-                                    <div class="col-12 form-group mb-0">
-                                        <button class="btn">GET A QUOTE</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+{% block body %}
+    <!--==============================
+    Breadcumb
+    ============================== -->
+    <div class="breadcumb-wrapper text-center" data-bg-src="/assets/frontOffice/img/bg/breadcrumb-bg.png">
+        <div class="container">
+            <div class="breadcumb-content">
+                <h1 class="breadcumb-title">Ma Galerie</h1>
             </div>
-        </section>   
+            <ul class="breadcumb-menu">
+                <li><a href="{{ path('app_gallerie') }}">Galeries</a></li>
+                <li class="active">Mon Espace</li>
+            </ul>                
+        </div>
+    </div>
+
+    <!--==============================
+    Galerie Section
+    ==============================-->
+    <div class="space-top space-extra-bottom">
+        <div class="container">
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+            
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+
+            {% if galerie is null %}
+                {# Si l'utilisateur n'a pas de galerie #}
+                <div class="text-center">
+                    <div class="no-gallery-box bg-white">
+                        <img src="/assets/frontOffice/img/normal/empty-gallery.png" alt="Empty Gallery" class="mb-4" style="max-width: 200px;">
+                        <h3 class="h4 mb-4">Vous n'avez pas encore de galerie</h3>
+                        <p class="mb-4">Créez votre propre galerie pour commencer à partager vos œuvres d'art.</p>
+                        <a href="#" class="btn" data-bs-toggle="modal" data-bs-target="#createGalleryModal">Créer ma galerie</a>
+                    </div>
+                </div>
+
+                <!-- Modal Création Galerie -->
+                <div class="modal fade" id="createGalleryModal" tabindex="-1" aria-labelledby="createGalleryModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="createGalleryModalLabel">Créer ma galerie</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                {{ form_start(form, {'attr': {'class': 'gallery-form', 'id': 'galleryForm'}}) }}
+                                    <div class="form-group mb-4">
+                                        {{ form_label(form.nom, 'Nom de la galerie', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.nom, {
+                                            'attr': {
+                                                'class': 'form-control' ~ (form.nom.vars.valid ? '' : ' is-invalid'),
+                                                'placeholder': 'Entrez le nom de votre galerie'
+                                            }
+                                        }) }}
+                                        {% if not form.nom.vars.valid %}
+                                            <div class="invalid-feedback">
+                                                {{ form_errors(form.nom) }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-group mb-4">
+                                        {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.description, {
+                                            'attr': {
+                                                'class': 'form-control' ~ (form.description.vars.valid ? '' : ' is-invalid'),
+                                                'placeholder': 'Décrivez votre galerie',
+                                                'rows': '4'
+                                            }
+                                        }) }}
+                                        {% if not form.description.vars.valid %}
+                                            <div class="invalid-feedback">
+                                                {{ form_errors(form.description) }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="text-end">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                        <button type="submit" class="btn">Créer</button>
+                                    </div>
+                                {{ form_end(form) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                {# Si l'utilisateur a une galerie #}
+                <div class="gallery-info-box bg-white text-center mb-50">
+                    <h2 class="h3 mb-4">{{ galerie.nom }}</h2>
+                    <p class="gallery-description mb-4">{{ galerie.description }}</p>
+                    <div class="gallery-actions">
+                        <button class="btn me-3" data-bs-toggle="modal" data-bs-target="#editGalleryModal">
+                            <i class="fas fa-edit me-2"></i>Modifier
+                        </button>
+                        <a href="{{ path('delete_galerie_front', {'id': galerie.id}) }}" 
+                           class="btn style2 me-3"
+                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer votre galerie ?')">
+                            <i class="fas fa-trash me-2"></i>Supprimer
+                        </a>
+                        <a href="{{ path('articles_galerie', {'id': galerie.id}) }}" class="btn style3">
+                            <i class="fas fa-images me-2"></i>Voir les articles
+                        </a>
+                    </div>
+                </div>
+
+                {# Déplacer le modal d'édition ici et l'entourer d'une condition #}
+                {% if editForm is not null %}
+                    <!-- Modal Modification Galerie -->
+                    <div class="modal fade" id="editGalleryModal" tabindex="-1" aria-labelledby="editGalleryModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editGalleryModalLabel">Modifier ma galerie</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {{ form_start(editForm, {'attr': {'class': 'gallery-form', 'id': 'editGalleryForm'}}) }}
+                                        <div class="form-group mb-4">
+                                            {{ form_label(editForm.nom, 'Nom de la galerie', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(editForm.nom, {
+                                                'attr': {
+                                                    'class': 'form-control' ~ (editForm.nom.vars.valid ? '' : ' is-invalid'),
+                                                    'placeholder': 'Entrez le nom de votre galerie'
+                                                }
+                                            }) }}
+                                            {% if not editForm.nom.vars.valid %}
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(editForm.nom) }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="form-group mb-4">
+                                            {{ form_label(editForm.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(editForm.description, {
+                                                'attr': {
+                                                    'class': 'form-control' ~ (editForm.description.vars.valid ? '' : ' is-invalid'),
+                                                    'placeholder': 'Décrivez votre galerie',
+                                                    'rows': '4'
+                                                }
+                                            }) }}
+                                            {% if not editForm.description.vars.valid %}
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(editForm.description) }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="text-end">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                            <button type="submit" class="btn">Enregistrer</button>
+                                        </div>
+                                    {{ form_end(editForm) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const createModal = new bootstrap.Modal(document.getElementById('createGalleryModal'));
+        const editModal = new bootstrap.Modal(document.getElementById('editGalleryModal'));
+        
+        {% if form is not null and not form.vars.valid and app.request.method == 'POST' %}
+            createModal.show();
+        {% endif %}
+        
+        {% if editForm is not null and not editForm.vars.valid and app.request.method == 'POST' %}
+            editModal.show();
+        {% endif %}
+    });
+    </script>
+
+    <style>
+        .no-gallery-box {
+            padding: 50px 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .gallery-info-box {
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        .btn.style2 {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .alert {
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .btn.style3 {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .btn.style3:hover {
+            background-color: #138496;
+        }
+        
+        .gallery-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+    </style>
 {% endblock %}

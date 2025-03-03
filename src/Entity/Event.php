@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 class Event
@@ -16,35 +17,80 @@ class Event
     #[ORM\Column(type: Types::INTEGER)]
     private ?int $idevent = null;
 
-
     #[ORM\Column(name: "titre", length: 255)]
+    #[Assert\NotBlank(message: "Le titre est obligatoire")]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: "Le titre doit contenir au moins {{ limit }} caractères",
+        maxMessage: "Le titre ne peut pas dépasser {{ limit }} caractères"
+    )]
     private ?string $titre = null;
 
     #[ORM\Column(name: "description", type: Types::TEXT)]
+    #[Assert\NotBlank(message: "La description est obligatoire")]
+    #[Assert\Length(
+        min: 10,
+        minMessage: "La description doit contenir au moins {{ limit }} caractères"
+    )]
     private ?string $description = null;
 
     #[ORM\Column(name: "dateEvenement", type: 'datetime')]
+    #[Assert\NotBlank(message: "La date est obligatoire")]
+    #[Assert\GreaterThan(
+        value: "today",
+        message: "La date de l'événement doit être ultérieure à aujourd'hui"
+    )]
     private ?\DateTimeInterface $dateEvenement = null;
 
     #[ORM\Column(name: "lieu", length: 255)]
+    #[Assert\NotBlank(message: "Le lieu est obligatoire")]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: "Le lieu doit contenir au moins {{ limit }} caractères",
+        maxMessage: "Le lieu ne peut pas dépasser {{ limit }} caractères"
+    )]
     private ?string $lieu = null;
 
     #[ORM\Column(name: "nombreBillets")]
+    #[Assert\NotBlank(message: "Le nombre de billets est obligatoire")]
+    #[Assert\Positive(message: "Le nombre de billets doit être supérieur à 0")]
+    #[Assert\LessThan(
+        value: 10000,
+        message: "Le nombre de billets ne peut pas dépasser 10000"
+    )]
     private ?int $nombreBillets = null;
 
     #[ORM\Column(name: "image", length: 255, nullable: true)]
     private ?string $image = null;
 
     #[ORM\Column(name: "timestart", type: Types::TIME_MUTABLE)]
+    #[Assert\NotBlank(message: "L'heure de début est obligatoire")]
     private ?\DateTimeInterface $timestart = null;
 
     #[ORM\Column(name: "event_mission", type: Types::TEXT, nullable: true)]
+    #[Assert\Length(
+        min: 10,
+        minMessage: "La mission doit contenir au moins {{ limit }} caractères"
+    )]
     private ?string $eventMission = null;
 
     #[ORM\Column(name: "donation_objective", type: Types::FLOAT, nullable: true)]
+    #[Assert\PositiveOrZero(message: "L'objectif de don doit être positif ou nul")]
+    #[Assert\LessThan(
+        value: 1000000,
+        message: "L'objectif de don ne peut pas dépasser 1 000 000"
+    )]
     private ?float $donationObjective = null;
 
     #[ORM\Column(name: "seatprice", type: Types::FLOAT)]
+    #[Assert\NotBlank(message: "Le prix du billet est obligatoire")]
+    #[Assert\Positive(message: "Le prix du billet doit être supérieur à 0")]
+    #[Assert\LessThan(
+        value: 10000,
+        message: "Le prix du billet ne peut pas dépasser 10000"
+    )]
     private ?float $seatprice = null;
 
     #[ORM\OneToMany(targetEntity: Donation::class, mappedBy: 'event')]
@@ -63,7 +109,6 @@ class Event
     {
         return $this->idevent;
     }
-
 
     public function getTitre(): ?string
     {

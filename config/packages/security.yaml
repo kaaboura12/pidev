@@ -39,6 +39,7 @@ security:
         - { path: ^/admin, roles: ROLE_ADMIN }  # Restriction aux admins pour /admin
         - { path: ^/profile, roles: ROLE_USER }  # Accessible aux utilisateurs connectés
         - { path: ^/back, roles: ROLE_USER }  # Restreint l'accès aux pages utilisateur
+        - { path: ^/uploads/cv/, roles: ROLE_USER }
 
 when@test:
     security:

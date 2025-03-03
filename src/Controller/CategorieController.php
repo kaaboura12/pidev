@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use App\Form\CategorieType;
 
 final class CategorieController extends AbstractController
 {
@@ -26,52 +27,18 @@ final class CategorieController extends AbstractController
         $categorie->setDateCreation(new \DateTime());
         
         // Create form
-        $form = $this->createFormBuilder($categorie)
-            ->add('nom', TextType::class, [
-                'label' => 'Nom de la catégorie',
-                'attr' => [
-                    'class' => 'form-control form-control-lg',
-                    'placeholder' => 'Entrez le nom de la catégorie'
-                ]
-            ])
-            ->add('description', TextareaType::class, [
-                'label' => 'Description de la catégorie',
-                'required' => false,
-                'attr' => [
-                    'class' => 'form-control form-control-lg',
-                    'rows' => 4,
-                    'placeholder' => 'Décrivez brièvement cette catégorie...'
-                ]
-            ])
-            ->add('date_creation', DateType::class, [
-                'label' => 'Date de création',
-                'widget' => 'single_text',
-                'attr' => [
-                    'class' => 'form-control form-control-lg',
-                    'readonly' => true,
-                    'style' => 'background-color: #f8f9fa;'
-                ],
-                'data' => new \DateTime()
-            ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Ajouter la catégorie',
-                'attr' => [
-                    'class' => 'btn btn-gradient-primary btn-lg font-weight-medium'
-                ]
-            ])
-            ->getForm();
-
+        $form = $this->createForm(CategorieType::class, $categorie);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($categorie);
             $entityManager->flush();
 
-            $this->addFlash('success', 'La catégorie a été ajoutée avec succès!');
+            $this->addFlash('success', 'La catégorie a été créée avec succès!');
             return $this->redirectToRoute('back_showcategorie');
         }
         
-        return $this->render('backOffice/formation/categorie.html.twig', [
+        return $this->render('backOffice/categorie/new.html.twig', [
             'categories' => $categories,
             'form' => $form->createView(),
         ]);
@@ -86,38 +53,7 @@ final class CategorieController extends AbstractController
             throw $this->createNotFoundException('Catégorie non trouvée');
         }
         
-        $form = $this->createFormBuilder($categorie)
-            ->add('nom', TextType::class, [
-                'label' => 'Nom de la catégorie',
-                'attr' => [
-                    'class' => 'form-control form-control-lg',
-                    'placeholder' => 'Entrez le nom de la catégorie'
-                ]
-            ])
-            ->add('description', TextareaType::class, [
-                'label' => 'Description de la catégorie',
-                'required' => false,
-                'attr' => [
-                    'class' => 'form-control form-control-lg',
-                    'rows' => 4,
-                    'placeholder' => 'Décrivez brièvement cette catégorie...'
-                ]
-            ])
-            ->add('date_creation', DateType::class, [
-                'label' => 'Date de création',
-                'widget' => 'single_text',
-                'attr' => [
-                    'class' => 'form-control form-control-lg'
-                ]
-            ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Enregistrer les modifications',
-                'attr' => [
-                    'class' => 'btn btn-gradient-primary btn-lg font-weight-medium'
-                ]
-            ])
-            ->getForm();
-
+        $form = $this->createForm(CategorieType::class, $categorie);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -127,7 +63,7 @@ final class CategorieController extends AbstractController
             return $this->redirectToRoute('back_showcategorie');
         }
         
-        return $this->render('backOffice/formation/edit_categorie.html.twig', [
+        return $this->render('backOffice/categorie/edit.html.twig', [
             'form' => $form->createView(),
             'categorie' => $categorie
         ]);

@@ -20,4 +20,39 @@ class EmploiRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Emploi::class);
     }
+    public function findByTitre(string $titre): array
+    {
+        return $this->createQueryBuilder('e')
+            ->where('e.titre LIKE :titre')
+            ->setParameter('titre', '%' . $titre . '%')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByFilters(?float $budget, ?string $competence, ?string $lieu): array
+{
+    $qb = $this->createQueryBuilder('e');
+
+    // Filter by budget
+    if ($budget) {
+        $qb->andWhere('e.budget <= :budget')
+           ->setParameter('budget', $budget);
+    }
+
+    // Filter by competence
+    if ($competence) {
+        $qb->andWhere('e.competences_requises LIKE :competence')
+           ->setParameter('competence', '%' . $competence . '%');
+    }
+
+    // Filter by lieu (location)
+    if ($lieu) {
+        $qb->andWhere('e.lieu LIKE :lieu')
+           ->setParameter('lieu', '%' . $lieu . '%');
+    }
+
+    return $qb->getQuery()->getResult();
+}
+
+
 }

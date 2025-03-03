@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ReservationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 #[ORM\Table(name: 'reservation')]
@@ -27,9 +28,19 @@ class Reservation
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(name: 'seats_reserved', type: Types::INTEGER)]
+    #[Assert\NotBlank(message: 'Please enter the number of seats')]
+    #[Assert\Type(type: 'integer', message: 'The number of seats must be a valid number')]
+    #[Assert\Positive(message: 'The number of seats must be greater than 0')]
+    #[Assert\LessThanOrEqual(
+        propertyPath: 'event.nombreBillets',
+        message: 'You cannot reserve more seats than available ({{ compared_value }} seats available)'
+    )]
     private ?int $seats = null;
 
     #[ORM\Column(name: 'total_amount', type: Types::FLOAT)]
+    #[Assert\NotBlank(message: 'Total amount is required')]
+    #[Assert\Type(type: 'float', message: 'Total amount must be a valid number')]
+    #[Assert\PositiveOrZero(message: 'Total amount cannot be negative')]
     private ?float $totalAmount = null;
 
     public function id_reservation(): ?int
